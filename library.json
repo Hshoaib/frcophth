@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "pages": [
+    {
+      "id": "frcophth-optics-vergence",
+      "track": "frcophth",
+      "topic": "optics",
+      "title": "Vergence & the vergence equation",
+      "file": "pages/optics-vergence.html",
+      "summary": "What vergence is, the L = n/l relationship, and a live calculator to build intuition without a calculator.",
+      "source": "Elkington, Ch.3",
+      "updated": "2026-06-17"
+    },
+    {
+      "id": "msra-cardio-acs",
+      "track": "msra",
+      "topic": "cardiology",
+      "title": "Acute coronary syndromes",
+      "file": "pages/msra-acs.html",
+      "summary": "STEMI vs NSTEMI vs unstable angina, and the first-line management to recall under exam pressure.",
+      "source": "NICE CKS",
+      "updated": "2026-06-17"
+    }
+  ]
+}

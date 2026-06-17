@@ -1,6 +1,6 @@
 /* Theatre service worker — offline-first shell.
    Bump CACHE when you change the app so clients pick up the new version. */
-const CACHE = "theatre-v2";
+const CACHE = "theatre-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -30,6 +30,16 @@ self.addEventListener("fetch", e => {
 
   // Cross-origin (Google sign-in / Drive API) — always go to the network, never cache.
   if (url.origin !== location.origin) return;
+
+  // library.json — network-first so newly added pages show up; cache for offline.
+  if (url.pathname.endsWith("library.json")) {
+    e.respondWith(
+      fetch(req)
+        .then(resp => { const copy = resp.clone(); caches.open(CACHE).then(c => c.put(req, copy)); return resp; })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
 
   // App shell / navigations — network-first so updates show when online, cache when offline.
   if (req.mode === "navigate") {

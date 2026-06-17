@@ -301,6 +301,26 @@ main{flex:1;padding:4px 18px 100px}
 .jtag-chip{font-size:11px;color:var(--dim);border:1px solid var(--line);padding:2px 9px;border-radius:99px}
 .j-task{font-size:13.5px;margin-bottom:7px;color:var(--dim)}
 .j-text{font-size:14.5px;line-height:1.5}
+
+/* ---------- Library ---------- */
+.lib-controls{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.lib-search{width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r);padding:12px 14px;font-size:15px;font-family:var(--sans)}
+.lib-tracks{display:flex;gap:7px;flex-wrap:wrap}
+.ltab{border:1px solid var(--line);background:var(--bg-2);color:var(--dim);border-radius:99px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer}
+.ltab.on{color:var(--text);border-color:var(--accent-line);background:var(--accent-soft)}
+.lib-track{margin-bottom:18px}
+.lib-topic{margin-bottom:12px}
+.lib-topic-h{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600;margin:10px 2px 8px}
+.lib-card{display:flex;gap:12px;align-items:stretch;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:13px 14px;margin-bottom:9px}
+.lib-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.lib-open{text-decoration:none;color:var(--text);display:block}
+.lib-open:hover .lib-title{color:var(--accent)}
+.lib-title{font-size:15.5px;font-weight:600;line-height:1.3;display:block}
+.lib-sum{font-size:13px;color:var(--dim);line-height:1.45;display:block;margin-top:3px}
+.lib-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:auto}
+.lib-src,.lib-opened{font-size:11px;color:var(--faint)}
+.lib-rate{flex:0 0 102px;min-height:0;cursor:pointer;align-items:center;justify-content:center;gap:4px;text-align:center}
+.lib-rate .ct-name{text-transform:uppercase;font-size:9px;letter-spacing:.05em;color:var(--faint)}
 .syncstat{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--text);margin:4px 0}
 .syncdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .syncdot.ok{background:var(--go)} .syncdot.warn{background:var(--ease)}
@@ -381,6 +401,7 @@ const STORES = {
   sessions:   {keyPath:"id"},
   milestones: {keyPath:"id"},
   inbox:      {keyPath:"id"},      // quick capture
+  library:    {keyPath:"id"},      // per-page confidence + last opened
   settings:   {keyPath:"key"},
   meta:       {keyPath:"key"}
 };
@@ -389,7 +410,7 @@ const STORES = {
 let _db=null;
 function openDB(){
   return new Promise((res,rej)=>{
-    const r=indexedDB.open("theatre",1);
+    const r=indexedDB.open("theatre",2);
     r.onupgradeneeded=e=>{
       const db=e.target.result;
       for(const [name,opt] of Object.entries(STORES))
@@ -438,7 +459,7 @@ function toast(msg){const el=document.getElementById("toast");el.textContent=msg
 /* =========================================================================
    Router
    ========================================================================= */
-const VIEWS={today:renderToday,plan:renderPlan,library:stub,progress:renderProgress,journal:renderJournal,settings:renderSettings};
+const VIEWS={today:renderToday,plan:renderPlan,library:renderLibrary,progress:renderProgress,journal:renderJournal,settings:renderSettings};
 function currentView(){const h=location.hash.replace(/^#\/?/,"")||"today";return VIEWS[h]?h:"today";}
 async function route(){
   const v=currentView();
@@ -1415,6 +1436,108 @@ function syncBadgeText(){
   return "connected";
 }
 function updateSyncBadge(){const el=document.getElementById("syncState");if(el)el.textContent=syncBadgeText();}
+
+/* =========================================================================
+   STUDY LIBRARY  (slice 6)
+   Reads library.json (the textbook→page chat's output), groups by track/topic,
+   tracks per-page confidence (which can raise the matching coverage tile).
+   ========================================================================= */
+let libQuery="", libTrack="all", libFocusSearch=false;
+const LIB_TRACK_ORDER=["frcophth","msra","other"];
+const LIB_TRACK_LABEL={frcophth:"FRCOphth Part 1",msra:"MSRA",other:"Other"};
+const normTrack=t=>LIB_TRACK_ORDER.includes(t)?t:"other";
+
+async function renderLibrary(el){
+  const state=await dbAll("library"); const stateMap={}; state.forEach(s=>stateMap[s.id]=s);
+
+  let pages=null, err=null;
+  try{
+    const r=await fetch("library.json");
+    if(r.status===404) pages=[];
+    else if(!r.ok) err="library.json returned "+r.status+".";
+    else { const j=await r.json(); pages=Array.isArray(j.pages)?j.pages:[]; }
+  }catch(e){ err="Couldn't load the library — you may be offline, or library.json is missing or invalid."; }
+
+  const controls=`
+    <div class="lib-controls">
+      <input id="libSearch" class="lib-search" placeholder="Search the library…" autocomplete="off">
+      <div class="lib-tracks">
+        ${[["all","All"],["frcophth","FRCOphth"],["msra","MSRA"],["other","Other"]].map(([v,l])=>`<button class="ltab ${libTrack===v?"on":""}" data-libtrack="${v}">${l}</button>`).join("")}
+      </div>
+    </div>`;
+
+  let body;
+  if(err){ body=`<div class="empty"><h3>Library unavailable</h3><p>${esc(err)}</p></div>`; }
+  else if(pages.length===0){
+    body=`<div class="empty"><h3>No library yet</h3>
+      <p>Interactive pages live as standalone files in your repo and are listed in <span class="mono">library.json</span> at the site root. Add that file — your textbook→page chat produces it — and your pages appear here, grouped by exam and topic.</p></div>`;
+  } else {
+    const q=libQuery.trim().toLowerCase();
+    const filtered=pages.filter(p=>{
+      if(libTrack!=="all" && normTrack(p.track)!==libTrack) return false;
+      if(q){ const hay=(p.title+" "+(p.topic||"")+" "+(p.source||"")+" "+(p.summary||"")).toLowerCase(); if(!hay.includes(q)) return false; }
+      return true;
+    });
+    if(filtered.length===0){ body=`<div class="empty"><h3>No matches</h3><p>Nothing in the library matches that filter.</p></div>`; }
+    else{
+      body="";
+      for(const tr of LIB_TRACK_ORDER){
+        const inTr=filtered.filter(p=>normTrack(p.track)===tr);
+        if(!inTr.length) continue;
+        body+=`<div class="lib-track"><div class="cov-th"><span class="cov-name">${LIB_TRACK_LABEL[tr]}</span><span class="cov-summary mono">${inTr.length} page${inTr.length>1?"s":""}</span></div>`;
+        const topics=[...new Set(inTr.map(p=>p.topic||"general"))].sort();
+        for(const tp of topics){
+          body+=`<div class="lib-topic"><div class="lib-topic-h">${esc(tp)}</div>`;
+          body+=inTr.filter(p=>(p.topic||"general")===tp).map(p=>libCard(p,stateMap[p.id])).join("");
+          body+=`</div>`;
+        }
+        body+=`</div>`;
+      }
+    }
+  }
+
+  el.innerHTML=controls+body;
+
+  const s=el.querySelector("#libSearch");
+  if(s){ s.value=libQuery; s.oninput=()=>{libQuery=s.value;libFocusSearch=true;renderLibrary(el);}; }
+  el.querySelectorAll("[data-libtrack]").forEach(b=>b.onclick=()=>{libTrack=b.dataset.libtrack;renderLibrary(el);});
+  el.querySelectorAll("[data-librate]").forEach(b=>b.onclick=()=>cycleLibConfidence(b.dataset.librate,b.dataset.track,b.dataset.topic,el));
+  el.querySelectorAll("[data-open]").forEach(a=>a.addEventListener("click",async ev=>{ev.preventDefault();await recordOpen(a.dataset.open);location.href=a.getAttribute("href");}));
+  if(libFocusSearch){const s2=el.querySelector("#libSearch");if(s2){s2.focus();s2.setSelectionRange(s2.value.length,s2.value.length);}libFocusSearch=false;}
+}
+
+function libCard(p,state){
+  const r=state?(state.rating||0):0;
+  const opened=state&&state.lastOpened?("opened "+esc(shortDM(state.lastOpened.slice(0,10)))):"";
+  return `<article class="lib-card">
+    <div class="lib-main">
+      <a class="lib-open" href="${esc(p.file)}" data-open="${esc(p.id)}">
+        <span class="lib-title">${esc(p.title)}</span>
+        ${p.summary?`<span class="lib-sum">${esc(p.summary)}</span>`:""}
+      </a>
+      <div class="lib-meta">${p.source?`<span class="lib-src mono">${esc(p.source)}</span>`:""}${opened?`<span class="lib-opened mono">${opened}</span>`:""}</div>
+    </div>
+    <button class="cov-tile cov-${r} lib-rate" data-librate="${esc(p.id)}" data-track="${esc(normTrack(p.track))}" data-topic="${esc(p.topic||"")}">
+      <span class="ct-name">confidence</span><span class="ct-state">${COV_STATES[r]}</span>
+    </button>
+  </article>`;
+}
+
+async function recordOpen(id){
+  const cur=await dbGet("library",id);
+  await dbPut("library",{id,rating:cur?(cur.rating||0):0,lastOpened:new Date().toISOString()});
+}
+async function cycleLibConfidence(id,track,topic,el){
+  const cur=await dbGet("library",id);
+  const r=((cur?cur.rating:0)+1)%4;
+  await dbPut("library",{id,rating:r,lastOpened:cur?cur.lastOpened:null});
+  // Feed the coverage map: a page rating can only RAISE its topic, never lower it.
+  if(track&&topic){
+    const key=track+":"+topic, cov=await dbGet("coverage",key), cr=cov?(cov.rating||0):0;
+    if(r>cr) await dbPut("coverage",{key,track,topic,rating:r});
+  }
+  renderLibrary(el);
+}
 
 /* =========================================================================
    STUBS (built in later slices)
