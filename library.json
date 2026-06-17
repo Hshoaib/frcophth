@@ -20,6 +20,16 @@
       "summary": "STEMI vs NSTEMI vs unstable angina, and the first-line management to recall under exam pressure.",
       "source": "NICE CKS",
       "updated": "2026-06-17"
+    },
+    {
+      "id": "frcophth-optics-properties-of-light",
+      "track": "frcophth",
+      "topic": "optics",
+      "title": "Properties of light & visual function",
+      "file": "pages/optics-properties-of-light.html",
+      "summary": "The physical properties of light (spectrum, waves, interference, diffraction, polarisation, photometry) and how the clinic measures vision (colour, acuity, contrast, stereopsis, perimetry).",
+      "source": "Elkington, Ch.1",
+      "updated": "2026-06-17"
     }
   ]
 }

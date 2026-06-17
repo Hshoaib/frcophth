@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c1414">
+<title>Properties of Light &amp; Visual Function — Theatre</title>
+<style>
+:root{--bg:#0c1414;--surface:#14201f;--line:#243634;--line-soft:#1a2826;--text:#e9f0ee;--dim:#8fa6a3;--faint:#5d736f;--accent:#f2a93b;--go:#57c79a;--danger:#e0796a;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto;padding:18px 20px 64px}
+a.back{color:var(--dim);text-decoration:none;font-size:13px;font-weight:600}
+a.back:hover{color:var(--text)}
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:26px 0 6px}
+h1{font-size:25px;letter-spacing:-.01em;margin:0 0 8px}
+h2{font-size:18px;margin:30px 0 8px;scroll-margin-top:14px}
+h3{font-size:15.5px;margin:20px 0 6px;color:var(--dim)}
+p,li{font-size:15.5px}
+.lead{color:var(--dim);font-size:15px}
+.toc{border:1px solid var(--line-soft);background:var(--surface);border-radius:10px;padding:12px 16px;margin:14px 0}
+.toc a{color:var(--dim);text-decoration:none;display:block;padding:3px 0;font-size:14px}
+.toc a:hover{color:var(--accent)}
+.toc .num{color:var(--faint);font-variant-numeric:tabular-nums;display:inline-block;width:1.6em}
+/* clickable term + inline definition (nestable) */
+.term{color:var(--accent);border-bottom:1px dotted var(--accent);cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;font:inherit;padding:0}
+.term .def{display:none;margin:8px 0;padding:10px 12px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;color:var(--text);font-size:14px;line-height:1.5;cursor:auto}
+.term.open .def{display:block}
+/* callouts */
+.bg,.exam,.uncertain{border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0;font-size:14.5px}
+.bg{border-left:3px solid var(--dim);background:var(--surface)}
+.exam{border-left:3px solid var(--go);background:rgba(87,199,154,.08)}
+.uncertain{border-left:3px solid var(--danger);background:rgba(224,121,106,.08)}
+.callout-label{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;display:block;margin-bottom:4px}
+.bg .callout-label{color:var(--dim)} .exam .callout-label{color:var(--go)} .uncertain .callout-label{color:var(--danger)}
+details{border:1px solid var(--line-soft);border-radius:10px;background:var(--surface);padding:2px 16px;margin:14px 0}
+summary{cursor:pointer;font-weight:600;padding:11px 0;color:var(--accent)}
+.qcheck{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:14px 16px;margin:16px 0}
+.qcheck .qlabel{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--faint);display:block;margin-bottom:6px}
+.qcheck .key{display:none;border-left:3px solid var(--go);padding-left:14px;margin-top:12px}
+.qcheck.open .key{display:block}
+.qcheck button.reveal{margin-top:10px;background:none;border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:7px 14px;font-weight:600;cursor:pointer}
+figure{margin:18px 0;text-align:center}
+figure svg{max-width:100%;height:auto}
+figcaption{font-size:12.5px;color:var(--faint);margin-top:8px}
+table.tbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+table.tbl th,table.tbl td{border:1px solid var(--line-soft);padding:7px 9px;text-align:left}
+table.tbl th{color:var(--dim);font-weight:600;background:var(--surface)}
+table.tbl td.n{font-variant-numeric:tabular-nums;font-family:var(--mono)}
+code{font-family:var(--mono);font-size:13.5px;background:var(--surface);padding:1px 5px;border-radius:5px}
+.verify{margin-top:34px;border-top:1px solid var(--line-soft);padding-top:14px;color:var(--faint);font-size:13px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html#/library">← Library</a>
+  <div class="eyebrow">FRCOphth · Optics</div>
+  <h1>Properties of Light &amp; Visual Function</h1>
+  <p class="lead">Elkington, Chapter 1. What light <em>is</em> and how it behaves — and how the clinic turns those properties into measurements of seeing. Tap any <span class="term">orange term<span class="def">Like this — a tap reveals a plain-English definition. Definitions can contain their own tappable terms. Tap again to close.</span></span> for a from-scratch definition.</p>
+
+  <nav class="toc" aria-label="Contents">
+    <a href="#spectrum"><span class="num">1</span>The electromagnetic spectrum &amp; optical radiation</a>
+    <a href="#colour"><span class="num">2</span>Colour vision</a>
+    <a href="#colourtests"><span class="num">3</span>Testing colour vision</a>
+    <a href="#uv"><span class="num">4</span>Ultraviolet light &amp; retinal hazard</a>
+    <a href="#fluor"><span class="num">5</span>Fluorescence &amp; fluorescein angiography</a>
+    <a href="#icg"><span class="num">6</span>Indocyanine green</a>
+    <a href="#wave"><span class="num">7</span>The wave nature of light</a>
+    <a href="#interference"><span class="num">8</span>Interference</a>
+    <a href="#diffraction"><span class="num">9</span>Diffraction &amp; the Airy disc</a>
+    <a href="#resolution"><span class="num">10</span>Resolution &amp; resolving power</a>
+    <a href="#acuity"><span class="num">11</span>Testing visual acuity</a>
+    <a href="#near"><span class="num">12</span>Near, potential, contrast &amp; glare</a>
+    <a href="#polar"><span class="num">13</span>Polarisation, birefringence &amp; dichroism</a>
+    <a href="#stereo"><span class="num">14</span>Stereoscopic vision</a>
+    <a href="#photometry"><span class="num">15</span>Measuring light: radiometry &amp; photometry</a>
+    <a href="#perimetry"><span class="num">16</span>Automated perimetry</a>
+  </nav>
+
+  <!-- ============================================================= -->
+  <h2 id="spectrum">1 · The electromagnetic spectrum &amp; optical radiation</h2>
+
+  <p>Light is energy the human eye can detect. The deeper physical nature of light is still not fully understood, but its <em>behaviour</em> is mapped in detail — and that behaviour is the whole of clinical optics. Light is one slice of the <span class="term">electromagnetic spectrum<span class="def">The full range of electromagnetic radiation, ordered by <span class="term">wavelength<span class="def">The length of one complete wave — the distance from one crest to the next. Symbol λ (lambda). Short λ = high energy; long λ = low energy.</span></span>. From shortest to longest: cosmic rays → gamma rays → X-rays → ultraviolet → visible light → infrared → microwaves → radar → TV → radio. All travel at the same speed in a vacuum; they differ only in wavelength (and therefore frequency and energy).</span></span>.</p>
+
+  <p><strong>Optical radiation</strong> is the band that sits between X-rays and microwaves. It is divided into seven wavebands, grouped because wavelengths within each one provoke similar biological effects:</p>
+
+  <table class="tbl">
+    <tr><th>Waveband</th><th>Wavelength</th></tr>
+    <tr><td>UV-C</td><td class="n">200–280 nm</td></tr>
+    <tr><td>UV-B</td><td class="n">280–315 nm</td></tr>
+    <tr><td>UV-A</td><td class="n">315–400 nm</td></tr>
+    <tr><td><strong>Visible</strong></td><td class="n">400–780 nm</td></tr>
+    <tr><td>IR-A (near IR)</td><td class="n">780–1400 nm</td></tr>
+    <tr><td>IR-B</td><td class="n">1400–3000 nm</td></tr>
+    <tr><td>IR-C</td><td class="n">3000–10 000 nm</td></tr>
+  </table>
+
+  <p>A <span class="term">nanometre<span class="def">nm = one-billionth of a metre (10⁻⁹ m). Visible light spans roughly 400 nm (violet) to 780 nm (red).</span></span> is the natural unit here. The general rule: <strong>the shorter the wavelength, the more energy per</strong> <span class="term">photon<span class="def">A single "packet" or <span class="term">quantum<span class="def">The smallest indivisible unit of something — here, of light energy. Plural: quanta. Light comes in discrete energy packets, not a continuous stream.</span></span> of light. Light behaves both as a wave and as a stream of these particles.</span></span>.</p>
+
+  <div class="bg"><span class="callout-label">Background — why short wavelength means high energy</span>
+  A photon's energy is <code>E = hc/λ</code>: h is Planck's constant, c the speed of light, λ the wavelength. Energy is inversely proportional to λ, so halving the wavelength doubles the photon energy. This is why UV (short λ) damages tissue and X-rays ionise, while infrared (long λ) mainly just heats.</div>
+
+  <figure>
+    <svg viewBox="0 0 600 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Electromagnetic spectrum with the optical band expanded">
+      <line x1="20" y1="60" x2="580" y2="60" style="stroke:var(--line);stroke-width:2"/>
+      <g style="font:11px var(--sans);fill:var(--faint)" text-anchor="middle">
+        <text x="60" y="50">gamma</text>
+        <text x="140" y="50">X-rays</text>
+        <text x="300" y="50">optical</text>
+        <text x="450" y="50">micro</text>
+        <text x="540" y="50">radio</text>
+        <text x="60" y="78">short λ</text>
+        <text x="540" y="78">long λ</text>
+      </g>
+      <!-- optical band marker -->
+      <rect x="240" y="54" width="120" height="12" style="fill:var(--accent);opacity:.25"/>
+      <!-- expanded visible bar -->
+      <line x1="120" y1="110" x2="480" y2="110" style="stroke:var(--line-soft);stroke-width:1"/>
+      <line x1="240" y1="66" x2="160" y2="100" style="stroke:var(--faint);stroke-width:.8"/>
+      <line x1="360" y1="66" x2="440" y2="100" style="stroke:var(--faint);stroke-width:.8"/>
+      <defs>
+        <linearGradient id="vis" x1="0" x2="1">
+          <stop offset="0" stop-color="#7a3df0"/><stop offset="0.25" stop-color="#3d6df0"/>
+          <stop offset="0.5" stop-color="#57c79a"/><stop offset="0.7" stop-color="#e8e23d"/>
+          <stop offset="1" stop-color="#e0796a"/>
+        </linearGradient>
+      </defs>
+      <rect x="220" y="104" width="160" height="14" rx="2" style="fill:url(#vis)"/>
+      <g style="font:10px var(--sans);fill:var(--dim)" text-anchor="middle">
+        <text x="160" y="135">UV ←</text>
+        <text x="220" y="135">400</text>
+        <text x="300" y="135">visible (nm)</text>
+        <text x="380" y="135">780</text>
+        <text x="440" y="135">→ IR</text>
+      </g>
+    </svg>
+    <figcaption>The electromagnetic spectrum; optical radiation (UV → visible → IR) expanded. Original schematic.</figcaption>
+  </figure>
+
+  <h3>What the eye does with each band</h3>
+  <p>The eye is a stack of filters. Going front to back:</p>
+  <ul>
+    <li>The <span class="term">cornea<span class="def">The clear, dome-shaped front window of the eye. It does most of the eye's focusing and is the first tissue light meets.</span></span> and <span class="term">sclera<span class="def">The tough white outer coat of the eyeball ("the white of the eye"). Opaque and protective.</span></span> absorb essentially all the very short UV (UV-B, UV-C) and the long IR (IR-B, IR-C).</li>
+    <li>UV-A that gets through is then strongly absorbed by the <span class="term">crystalline lens<span class="def">The eye's adjustable internal lens, sitting just behind the iris. It fine-tunes focus and, usefully, soaks up UV-A — protecting the retina behind it.</span></span>.</li>
+    <li>Wavelengths <strong>400–1400 nm</strong> (visible light + near infrared) pass through the <span class="term">ocular media<span class="def">The transparent structures light crosses to reach the retina: cornea, aqueous humour, lens, and vitreous gel.</span></span> and reach the <span class="term">retina<span class="def">The light-sensitive neural lining at the back of the eye — the "film" of the camera. It converts light into nerve signals.</span></span>.</li>
+  </ul>
+  <p>Visible wavelengths stimulate the <span class="term">photoreceptors<span class="def">Retinal cells that convert light into electrical signals — rods (dim light, no colour) and cones (bright light, colour).</span></span> and give the sensation of light. Near infrared is not "seen" but is focused onto the retina by the same refracting surfaces, so it can cause thermal injury — classically <strong>eclipse burns</strong> (solar retinopathy).</p>
+
+  <div class="exam"><span class="callout-label">Exam</span>
+  Memorise the seven bands and their cut-offs (200/280/315/400/780/1400/3000/10 000 nm), and the absorption map: <strong>cornea+sclera → UV-B/C and IR-B/C; lens → UV-A; 400–1400 nm → retina.</strong> The visible window (400–780 nm) and the "reaches-retina" window (400–1400 nm) are different numbers — examiners exploit the gap.</div>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>Which ocular structure is the principal absorber of UV-A, and why does that matter clinically?</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>The crystalline lens. Because the lens shields the retina from UV-A, removing it (cataract surgery → <span class="term">aphakia<span class="def">The state of having no crystalline lens, e.g. after cataract removal without an implant.</span></span>) lets UV-A reach the retina — relevant to perceived colour shifts and to designing UV-filtering lens implants.</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="colour">2 · Colour vision</h2>
+
+  <p>An object's colour is set by which wavelengths it emits or reflects. <strong>White light is a mixture of all visible wavelengths.</strong> The eye encodes colour with three cone populations, each tuned to a different region of the spectrum:</p>
+
+  <table class="tbl">
+    <tr><th>Cone</th><th>Sensitive to</th><th>Peak (Elkington Fig 1.2)</th></tr>
+    <tr><td>Short (S) — "blue"</td><td>short λ</td><td class="n">~440 nm</td></tr>
+    <tr><td>Middle (M) — "green"</td><td>middle λ</td><td class="n">~535 nm</td></tr>
+    <tr><td>Long (L) — "red"</td><td>long λ</td><td class="n">~560 nm</td></tr>
+  </table>
+
+  <figure>
+    <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Spectral sensitivity curves of the three cone types">
+      <line x1="50" y1="160" x2="500" y2="160" style="stroke:var(--line);stroke-width:1.5"/>
+      <line x1="50" y1="160" x2="50" y2="25" style="stroke:var(--line);stroke-width:1.5"/>
+      <text x="20" y="95" style="font:11px var(--sans);fill:var(--faint)" transform="rotate(-90 20,95)" text-anchor="middle">Absorption (%)</text>
+      <!-- S cone peak ~440 -> x for 400-700 mapped 50..500 -->
+      <path d="M70,160 Q130,30 168,160" style="fill:none;stroke:#3d6df0;stroke-width:2"/>
+      <path d="M210,160 Q310,30 360,160" style="fill:none;stroke:#57c79a;stroke-width:2"/>
+      <path d="M250,160 Q345,30 430,160" style="fill:none;stroke:#e0796a;stroke-width:2"/>
+      <g style="font:10px var(--sans);fill:var(--dim)" text-anchor="middle">
+        <text x="128" y="175">440</text>
+        <text x="310" y="175">535</text>
+        <text x="345" y="175">560</text>
+        <text x="50" y="190">400</text>
+        <text x="500" y="190">700</text>
+        <text x="275" y="195" style="fill:var(--faint)">Wavelength (nm)</text>
+      </g>
+    </svg>
+    <figcaption>Overlapping spectral sensitivities of S, M and L cones. Original schematic.</figcaption>
+  </figure>
+
+  <div class="bg"><span class="callout-label">Background — the "red" cone isn't red</span>
+  The L-cone peaks around 560 nm, which is yellow-green, not red. Colour isn't read off one cone; the brain compares the <em>ratio</em> of signals across all three. A pure red is signalled by the L cone responding more than the M cone — not by a cone that peaks at red. This trips people up constantly.</div>
+
+  <h3>Congenital colour defects</h3>
+  <p>A congenital defect arises when a cone pigment is <strong>absent</strong> or its peak is <strong>shifted</strong>. The naming is systematic — learn the two suffixes:</p>
+  <table class="tbl">
+    <tr><th>Cone affected</th><th>Absent (-anopia)</th><th>Shifted (-anomaly)</th></tr>
+    <tr><td>Red (L)</td><td>protanopia</td><td>protanomaly</td></tr>
+    <tr><td>Green (M)</td><td>deuteranopia</td><td>deuteranomaly</td></tr>
+    <tr><td>Blue (S)</td><td>tritanopia</td><td>tritanomaly</td></tr>
+  </table>
+
+  <p>Genetics: the <strong>X chromosome</strong> carries the red and green pigment genes; <strong>chromosome 7</strong> carries the blue pigment gene. Because red/green genes are X-linked, defects are far commoner in men.</p>
+  <ul>
+    <li>Red/green defect: <strong>8% of men, 0.5% of women</strong>.</li>
+    <li>Commonest single type: <strong>deuteranomaly</strong> — 5% of men, 0.3% of women.</li>
+    <li>Tritan (blue) defects are rare.</li>
+  </ul>
+
+  <div class="bg"><span class="callout-label">Background — why "prot-/deuter-/trit-" map to red/green/blue</span>
+  The prefixes are Greek ordinals: <em>protos</em> = first (the L/red system), <em>deuteros</em> = second (M/green), <em>tritos</em> = third (S/blue). So <strong>prot = red, deuter = green, trit = blue</strong> — first-second-third = red-green-blue. A reliable mnemonic for a fact that's otherwise easy to scramble.</div>
+
+  <h3>Acquired colour defects</h3>
+  <p>Congenital defects hit a <em>particular</em> part of the spectrum. Acquired defects spread across the spectrum but can be worse in some regions. The clinically examined patterns:</p>
+  <ul>
+    <li><strong>Acquired optic nerve disease → red-green defect.</strong></li>
+    <li><strong>Exception:</strong> glaucoma and autosomal dominant optic neuropathy initially cause a predominantly <strong>blue-yellow</strong> deficit. (Indeed, glaucomatous field loss is detected earlier by perimetry using a blue stimulus on a yellow background.)</li>
+    <li><strong>Acquired retinal disease → blue-yellow defect.</strong></li>
+    <li><strong>Exception:</strong> cone dystrophy and Stargardt's disease cause a predominantly <strong>red-green</strong> defect.</li>
+  </ul>
+
+  <div class="exam"><span class="callout-label">Exam</span>
+  The classic two-line rule with its two exceptions is high-yield: <strong>optic nerve = red-green (but glaucoma/ADOA = blue-yellow); retina = blue-yellow (but cone dystrophy/Stargardt = red-green).</strong> Köllner's rule, with both exceptions, is a favourite.</div>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>A man has the commonest congenital colour defect. Name it, state which cone is affected and how, and give its rough prevalence.</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>Deuteranomaly — a <em>shift</em> (not absence) of the green (M) cone's sensitivity; ~5% of men (0.3% of women).</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="colourtests">3 · Testing colour vision</h2>
+  <p>By convention, colour tests are designed for illumination equivalent to <strong>afternoon daylight in the northern hemisphere</strong>.</p>
+
+  <h3>Farnsworth–Munsell (FM) 100 hue test</h3>
+  <p>The most comprehensive method. <strong>84 coloured discs</strong> (numbered on the undersurface), divided into <strong>four groups of 21</strong>, each group covering a portion of the spectrum. The discs differ <em>only in hue</em> — brightness and <span class="term">saturation<span class="def">How pure or intense a colour is. A highly saturated red is vivid; a desaturated red is washed-out/pinkish. Here all discs are matched for saturation so only hue varies.</span></span> are equal — so the only cue is colour. The subject arranges each group in order of closest colour match between fixed reference discs at the ends; the error pattern reveals the type of defect.</p>
+
+  <h3>D-15 test</h3>
+  <p>Uses colours from across the spectrum that must be ordered from a single reference cap. It does <strong>not</strong> detect mild defects, but anyone who passes is unlikely to have practically significant hue-discrimination problems — a quick screen.</p>
+
+  <h3>Ishihara pseudoisochromatic plates</h3>
+  <p>Specifically screen for <strong>congenital red-green</strong> defects (the commonest). Each plate is a field of dots; numbers (or wavy lines, for the illiterate) are embedded as dots of a different colour but the <em>same</em> brightness. The figure can be picked out <strong>only by colour, not by contrast</strong> — so a colour-blind person sees a random pattern or reads the wrong figure.</p>
+
+  <div class="bg"><span class="callout-label">Background — "pseudoisochromatic"</span>
+  "Iso-chromatic" = same colour; "pseudo-isochromatic" = <em>falsely</em> the same colour. The dots are deliberately matched in lightness so that, to a colour-defective eye, figure and background look identical — there's no brightness edge to give the answer away.</div>
+
+  <h3>Lanthony New Colour Test</h3>
+  <p>Tests hue discrimination and is usable by children.</p>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>Why can an Ishihara plate <em>only</em> be read using colour information — what design feature enforces this?</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>The figure dots and background dots are matched for brightness/contrast, so there's no luminance edge. The number is defined purely by a hue difference, which a red-green-defective eye cannot resolve.</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="uv">4 · Ultraviolet light &amp; retinal hazard</h2>
+  <p>The photoreceptors are actually sensitive down into the <strong>near UV (400–350 nm, UV-A)</strong> — but normally the lens absorbs these before they arrive. Remove or replace the lens without a UV filter and that light gets through:</p>
+  <ul>
+    <li>In <span class="term">aphakic<span class="def">No crystalline lens present (e.g. after cataract removal with no implant).</span></span> or <span class="term">pseudophakic<span class="def">A crystalline lens that has been replaced by an artificial <span class="term">intraocular lens<span class="def">An implanted artificial lens (IOL) placed inside the eye, usually after cataract removal.</span></span> implant.</span></span> eyes <em>without</em> a UV filter, UV-A reaches the retina and is perceived as blue/violet. Newly aphakic patients classically say "everything looks bluer."</li>
+    <li>More worrying: wavelengths from <strong>350 nm (UV) up to 441 nm (visible)</strong> appear to be the most dangerous for retinal damage under ordinary environmental light. So modern implant lenses incorporate a <strong>UV-A-absorbing substance</strong> to protect the retina.</li>
+  </ul>
+  <p><strong>Instrument light is also a hazard.</strong> Prolonged high-intensity exposure from the indirect ophthalmoscope, the intraocular light pipe (used in vitreoretinal surgery), and the operating microscope can damage the retina — sometimes one already compromised. Some instruments add yellow filters to cut the most damaging short wavelengths.</p>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>Why do UV-filtering intraocular lenses exist, and what band are they targeting?</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>Removing the natural lens removes the eye's UV-A shield. IOLs with a UV-A absorber re-create that protection, blocking roughly the 350–441 nm band thought most hazardous to the retina.</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="fluor">5 · Fluorescence &amp; fluorescein angiography</h2>
+  <p><span class="term">Fluorescence<span class="def">The property of a molecule to absorb light at a short wavelength and almost instantly re-emit light at a longer (lower-energy) wavelength. The energy difference is lost as heat/molecular motion.</span></span> is the ability of a molecule to <strong>absorb short-wavelength light and spontaneously emit longer-wavelength light</strong>. The dye <strong>fluorescein sodium</strong> (orange) is excited by <strong>blue light (465–490 nm)</strong> and emits <strong>yellow-green light (520–530 nm)</strong>.</p>
+
+  <div class="bg"><span class="callout-label">Background — why the emitted light is always longer</span>
+  An absorbed photon excites the molecule; some of that energy dissipates internally before a photon is re-emitted, so the emitted photon carries <em>less</em> energy — and lower energy means <em>longer</em> wavelength (recall <code>E = hc/λ</code>). The shift to longer wavelength is called the Stokes shift, and it's what makes the emitted glow separable from the exciting light.</div>
+
+  <h3>Fundus fluorescein angiography (FFA)</h3>
+  <p>FFA images the retinal and choroidal circulation by photographing fluorescein as it passes through the vessels after being injected systemically. The optical trick is two matched filters:</p>
+  <ul>
+    <li>White camera-flash light passes a <strong>blue "excitation" filter</strong> → only blue light (matching fluorescein's absorption) hits the fundus.</li>
+    <li>At the fundus: most blue is absorbed, some reflects unchanged, and some is converted to yellow-green by fluorescence.</li>
+    <li>Light leaving the eye passes a <strong>yellow-green "barrier" filter</strong>, which blocks the reflected blue and lets only the yellow-green fluorescent light reach the film — so the image shows only the dye, outlining vessels and any leakage.</li>
+  </ul>
+
+  <figure>
+    <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Filter system for fundus fluorescein angiography">
+      <circle cx="90" cy="100" r="48" style="fill:none;stroke:var(--line);stroke-width:2"/>
+      <ellipse cx="120" cy="100" rx="8" ry="24" style="fill:none;stroke:var(--line);stroke-width:1.5"/>
+      <!-- flash to eye (blue) -->
+      <line x1="440" y1="40" x2="150" y2="85" style="stroke:#3d6df0;stroke-width:2"/>
+      <rect x="285" y="48" width="10" height="34" transform="rotate(20 290 65)" style="fill:#3d6df0;opacity:.5"/>
+      <text x="450" y="40" style="font:11px var(--sans);fill:var(--dim)">flash</text>
+      <text x="250" y="40" style="font:10px var(--sans);fill:#6ea0f0">blue excitation filter</text>
+      <!-- eye to camera (yellow-green) -->
+      <line x1="150" y1="115" x2="440" y2="160" style="stroke:#7cc77a;stroke-width:2"/>
+      <rect x="285" y="118" width="10" height="34" transform="rotate(-20 290 135)" style="fill:#7cc77a;opacity:.6"/>
+      <text x="250" y="190" style="font:10px var(--sans);fill:#7cc77a">green barrier filter</text>
+      <rect x="445" y="145" width="34" height="28" style="fill:none;stroke:var(--line);stroke-width:1.5"/>
+      <text x="462" y="190" style="font:11px var(--sans);fill:var(--dim)" text-anchor="middle">film</text>
+    </svg>
+    <figcaption>FFA filter system: blue in, yellow-green out. Original schematic.</figcaption>
+  </figure>
+
+  <p><span class="term">Pseudofluorescence<span class="def">A false "fluorescent" signal on FFA caused not by the dye but by reflected light leaking through.</span></span> happens when the excitation and barrier filters <strong>overlap</strong> in transmission: reflected wavelengths at the green end of blue slip through the barrier filter and masquerade as fluorescence.</p>
+
+  <p>Other fluorescein uses: staining ocular-surface (epithelial) defects, anterior-segment angiography, measuring aqueous humour production and outflow, and — in light microscopy — localising tissue components via fluorescein bound to specific <span class="term">immunoglobulin<span class="def">An antibody protein. Tagging an antibody with fluorescein lets you light up wherever that antibody binds — the basis of immunofluorescence.</span></span> (immunofluorescence).</p>
+
+  <div class="exam"><span class="callout-label">Exam</span>
+  Lock in the fluorescein numbers: <strong>excited by blue 465–490 nm, emits yellow-green 520–530 nm.</strong> And the principle: excitation filter ≈ absorption spectrum; barrier filter ≈ emission spectrum; filter overlap → pseudofluorescence.</div>
+
+  <!-- ============================================================= -->
+  <h2 id="icg">6 · Indocyanine green (ICG)</h2>
+  <p>ICG is a fluorescent dye working in the <strong>infrared</strong>: it absorbs <strong>805 nm</strong> and emits <strong>835 nm</strong>. Crucially, the <span class="term">retinal pigment epithelium<span class="def">The RPE — a single layer of pigmented cells just behind the photoreceptors. Its melanin absorbs visible light, which on FFA can mask the choroid behind it.</span></span> does <em>not</em> absorb these IR wavelengths, so ICG (given intravenously) lets you image the <span class="term">choroidal<span class="def">The choroid is the vascular layer between retina and sclera that supplies the outer retina with blood. Hard to see on FFA because the RPE screens it; ICG sees through.</span></span> circulation that fluorescein struggles to show.</p>
+  <p>ICG is far less efficient: only about <strong>4%</strong> of absorbed 805 nm light is re-emitted at 835 nm, versus the much higher fluorescence of fluorescein. Per Elkington's era it was "not yet in general clinical use," but it was shown to reveal <strong>occult</strong> <span class="term">choroidal neovascularisation<span class="def">CNV — abnormal new blood vessels growing from the choroid, e.g. in wet age-related macular degeneration. "Occult" CNV is ill-defined/hidden on fluorescein but can be delineated by ICG.</span></span> invisible on fluorescein, and to photosensitise vascular lesions for diode-laser photocoagulation.</p>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>Why is ICG better than fluorescein for imaging the choroid?</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>ICG works in the infrared (805/835 nm), which the RPE does not absorb. The RPE therefore does not screen the choroidal circulation from view, so ICG images it directly — and can show occult choroidal neovascularisation.</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="wave">7 · The wave nature of light</h2>
+  <p>Within a uniform medium (and meeting no obstacle or interface), light travels in straight lines. We draw it as a <span class="term">ray<span class="def">A straight, arrowed line representing the path of light. By tradition, optical diagrams show rays travelling left-to-right across the page.</span></span>. But ray diagrams don't explain everything light does, so for some phenomena we model light as a <strong>wave</strong>.</p>
+
+  <p>Three equivalent pictures of light leaving a point source: (a) straight <em>rays</em> radiating outward; (b) each ray as an oscillating <em>wave</em>; (c) <span class="term">wavefronts<span class="def">Surfaces (here, concentric circles/spheres) joining all points of a wave that are at the same phase — drawn through the crests. They expand outward from the source like ripples from a stone dropped in water.</span></span> — concentric circles through the crests, exactly like ripples spreading from a stone dropped in still water.</p>
+
+  <p>Wave motion is energy (a disturbance) travelling <em>through</em> a medium; the medium itself doesn't move along. Its particles vibrate <strong>at right angles to the direction of travel</strong> — a <span class="term">transverse<span class="def">A wave in which the oscillation is perpendicular to the direction the wave travels (e.g. a flicked rope). Light is transverse — which is exactly why it can be polarised (see §13). Sound, by contrast, is longitudinal.</span></span> wave. Picture a ribbon tied to a rope you flick: the wave runs <em>along</em> the rope, but the ribbon only bobs <em>up and down</em>.</p>
+
+  <figure>
+    <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A wave showing wavelength and amplitude">
+      <line x1="20" y1="80" x2="500" y2="80" style="stroke:var(--line);stroke-width:1"/>
+      <path d="M20,80 C60,10 100,10 140,80 C180,150 220,150 260,80 C300,10 340,10 380,80 C420,150 460,150 500,80" style="fill:none;stroke:var(--accent);stroke-width:2.5"/>
+      <!-- wavelength bracket between two crests -->
+      <line x1="80" y1="35" x2="320" y2="35" style="stroke:var(--dim);stroke-width:1"/>
+      <line x1="80" y1="30" x2="80" y2="40" style="stroke:var(--dim)"/>
+      <line x1="320" y1="30" x2="320" y2="40" style="stroke:var(--dim)"/>
+      <text x="200" y="26" style="font:12px var(--sans);fill:var(--dim)" text-anchor="middle">wavelength λ (one cycle)</text>
+      <!-- amplitude -->
+      <line x1="200" y1="80" x2="200" y2="115" style="stroke:var(--go);stroke-width:1"/>
+      <text x="210" y="105" style="font:12px var(--sans);fill:var(--go)">amplitude A</text>
+      <text x="505" y="78" style="font:11px var(--sans);fill:var(--faint)">baseline</text>
+    </svg>
+    <figcaption>Wave terms. Original schematic.</figcaption>
+  </figure>
+
+  <p>Key definitions:</p>
+  <ul>
+    <li><strong>Wavelength (λ)</strong> — the distance between two matching points of the wave (e.g. crest to crest).</li>
+    <li><strong>Cycle</strong> — one complete oscillation; it occupies exactly one wavelength.</li>
+    <li><strong>Amplitude (A)</strong> — the maximum displacement from the baseline. (Brightness/intensity scales with amplitude.)</li>
+    <li><span class="term">Phase<span class="def">Where you are within a cycle, expressed as a fraction of the cycle or as an angle (a full cycle = 360°). Two waves "in step" are in phase; "out of step" means a phase difference.</span></span> — any portion of a cycle.</li>
+    <li><strong>Phase difference</strong> — for two waves of equal wavelength travelling together but out of step, the fraction of a cycle by which one leads. A quarter-wavelength lead = 90° (a full cycle being 360°).</li>
+  </ul>
+
+  <figure>
+    <svg viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two waves a quarter cycle out of phase">
+      <line x1="20" y1="60" x2="500" y2="60" style="stroke:var(--line);stroke-width:1"/>
+      <path d="M20,60 C60,15 100,15 140,60 C180,105 220,105 260,60 C300,15 340,15 380,60 C420,105 460,105 500,60" style="fill:none;stroke:var(--accent);stroke-width:2"/>
+      <path d="M20,60 C50,28 80,28 110,60 C140,92 170,92 200,60 C230,28 260,28 290,60 C320,92 350,92 380,60 C410,28 440,28 470,60" style="fill:none;stroke:var(--go);stroke-width:2;stroke-dasharray:5 4"/>
+      <text x="260" y="115" style="font:11px var(--sans);fill:var(--faint)" text-anchor="middle">quarter-cycle (90°) phase difference</text>
+    </svg>
+    <figcaption>Phase difference. Original schematic.</figcaption>
+  </figure>
+
+  <p>Light made of waves exactly in step is <strong>coherent</strong>; waves out of phase are <strong>incoherent</strong>. (Laser light is the classic coherent source.)</p>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>Light is a transverse wave. Which later property does that fact directly enable?</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>Polarisation. Only transverse waves have an oscillation plane that can be selectively transmitted or blocked (§13). Longitudinal waves like sound cannot be polarised.</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="interference">8 · Interference</h2>
+  <p>When two light waves travel the same path, they add together (algebraically — crest plus crest, crest plus trough), a process called <span class="term">superposition<span class="def">The principle that when waves overlap, the resulting displacement at each point is the sum of the individual displacements. Add the heights; positives and negatives can reinforce or cancel.</span></span>. The outcome depends on their phase:</p>
+  <ul>
+    <li><strong>Constructive interference</strong> — in phase: the waves sum to a larger wave.</li>
+    <li><strong>Destructive interference</strong> — out of phase by half a cycle and equal amplitude: they cancel completely.</li>
+    <li>Phase differences <em>between</em> these give an intermediate amplitude and phase.</li>
+  </ul>
+
+  <figure>
+    <svg viewBox="0 0 520 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Constructive versus destructive interference">
+      <!-- constructive -->
+      <text x="130" y="16" style="font:11px var(--sans);fill:var(--go)" text-anchor="middle">constructive (in phase)</text>
+      <path d="M20,45 q30,-22 60,0 q30,22 60,0 q30,-22 60,0 q30,22 60,0" style="fill:none;stroke:var(--accent);stroke-width:1.5"/>
+      <path d="M20,62 q30,-22 60,0 q30,22 60,0 q30,-22 60,0 q30,22 60,0" style="fill:none;stroke:var(--accent);stroke-width:1.5"/>
+      <path d="M20,100 q30,-40 60,0 q30,40 60,0 q30,-40 60,0 q30,40 60,0" style="fill:none;stroke:var(--go);stroke-width:2.5"/>
+      <text x="130" y="130" style="font:10px var(--sans);fill:var(--faint)" text-anchor="middle">→ bigger wave</text>
+      <!-- destructive -->
+      <text x="390" y="16" style="font:11px var(--sans);fill:var(--danger)" text-anchor="middle">destructive (½-cycle out)</text>
+      <path d="M280,45 q30,-22 60,0 q30,22 60,0 q30,-22 60,0 q30,22 60,0" style="fill:none;stroke:var(--accent);stroke-width:1.5"/>
+      <path d="M280,62 q30,22 60,0 q30,-22 60,0 q30,22 60,0 q30,-22 60,0" style="fill:none;stroke:var(--accent);stroke-width:1.5"/>
+      <line x1="280" y1="100" x2="500" y2="100" style="stroke:var(--danger);stroke-width:2.5"/>
+      <text x="390" y="130" style="font:10px var(--sans);fill:var(--faint)" text-anchor="middle">→ cancels out</text>
+    </svg>
+    <figcaption>Two waves adding by superposition. Original schematic.</figcaption>
+  </figure>
+
+  <h3>Where interference matters in the eye and clinic</h3>
+  <ul>
+    <li><strong>Corneal transparency.</strong> The collagen bundles (fibrils) of the corneal <span class="term">stroma<span class="def">The thick, collagen-rich middle layer that makes up most of the cornea's bulk.</span></span> are spaced so regularly that light scattered sideways by them is wiped out by <strong>destructive interference</strong> — which is a large part of why the cornea is clear rather than milky.</li>
+    <li><strong>Anti-reflection (low-reflection) lens coatings.</strong> A thin transparent film of the right thickness is applied to a lens. Light reflecting off the film's front surface and light reflecting off its back surface are half a cycle apart and destructively interfere — cancelling the reflection so more light is transmitted.</li>
+  </ul>
+
+  <div class="exam"><span class="callout-label">Exam</span>
+  Two favourite "interference in vivo/instruments" facts: <strong>regular corneal collagen spacing → destructive interference → transparency</strong>, and <strong>thin-film anti-reflection coatings work by destructive interference.</strong></div>
+
+  <!-- ============================================================= -->
+  <h2 id="diffraction">9 · Diffraction &amp; the Airy disc</h2>
+  <p><span class="term">Diffraction<span class="def">The spreading/bending of waves as they pass the edge of an obstacle or a narrow opening. The edge behaves as a new source of secondary wavelets that are out of phase with the original wave.</span></span> is what happens when a wavefront meets a narrow opening or the edge of an obstruction: the wave spreads out on the far side, as if the edge were a fresh source of secondary wavefronts (out of phase with the primary ones).</p>
+  <p>Behind a straight edge, the directly-lit zone is slightly dimmed by interference between primary and secondary waves, and the geometric "shadow" zone receives a faint glow from secondary waves alone. Through a <strong>circular aperture</strong>, light forms a <strong>circular diffraction pattern</strong>: a bright central disc ringed by alternating dark and light rings. That central bright disc is the <span class="term">Airy disc<span class="def">The bright central blob of the diffraction pattern from a circular aperture — the smallest "spot" a perfect lens can form from a point source. Its size sets the ultimate resolution limit of any optical system, including the eye.</span></span>.</p>
+
+  <figure>
+    <svg viewBox="0 0 420 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Airy disc intensity profile with side rings">
+      <line x1="20" y1="130" x2="400" y2="130" style="stroke:var(--line);stroke-width:1"/>
+      <path d="M20,128 q30,2 50,0 q15,-6 25,-2 q30,128 65,-110 q35,128 65,110 q10,-4 25,2 q20,2 50,0" style="fill:none;stroke:var(--accent);stroke-width:2.5"/>
+      <text x="210" y="40" style="font:12px var(--sans);fill:var(--accent)" text-anchor="middle">Airy disc</text>
+      <text x="100" y="150" style="font:10px var(--sans);fill:var(--faint)" text-anchor="middle">dark ring</text>
+      <text x="320" y="150" style="font:10px var(--sans);fill:var(--faint)" text-anchor="middle">dark ring</text>
+    </svg>
+    <figcaption>Intensity across a circular-aperture diffraction pattern. Original schematic.</figcaption>
+  </figure>
+
+  <p>Diffraction is worst with <strong>small apertures</strong> and occurs in every optical system — lenses, instruments and the eye. The trade-offs:</p>
+  <ul>
+    <li>In lenses and instruments, diffraction at the apertures used is negligible compared with their other faults (<span class="term">aberrations<span class="def">Imperfections in an optical system that blur or distort the image, separate from diffraction — e.g. spherical and chromatic aberration. Covered in Chapter 8.</span></span>).</li>
+    <li>In the <strong>eye</strong>, diffraction is the main cause of image imperfection when the <span class="term">pupil<span class="def">The central aperture of the iris through which light enters the eye; it widens in dim light and constricts in bright light.</span></span> is <em>small</em>. A larger pupil reduces diffraction — but that gain is outweighed by the increasing aberrations of a wide-open eye.</li>
+  </ul>
+  <p>Diffraction is also harnessed deliberately in the design of some <strong>diffractive multifocal intraocular lenses</strong>.</p>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>For the eye, is a very small pupil or a very large pupil better for image quality — and what limits each?</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>Neither extreme is ideal. A small pupil is limited by <strong>diffraction</strong>; a large pupil is limited by <strong>aberrations</strong>. Optimal optical quality sits at an intermediate pupil size (around 2–3 mm).</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="resolution">10 · Resolution &amp; resolving power</h2>
+  <p>The <strong>limit of resolution</strong> (or <strong>resolving power</strong>) is the smallest angle of separation, <em>w</em>, between two points that still lets a system form <strong>two distinguishable images</strong>. Because each point is imaged as an Airy disc, the limit is reached when the two discs are so close that the <strong>centre of one falls on the first dark ring of the other</strong>.</p>
+
+  <figure>
+    <svg viewBox="0 0 380 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two overlapping Airy disc profiles at the resolution limit, and rays converging at angle w">
+      <line x1="40" y1="70" x2="340" y2="70" style="stroke:var(--line);stroke-width:1"/>
+      <path d="M70,68 q40,-50 80,0" style="fill:none;stroke:var(--accent);stroke-width:2"/>
+      <path d="M150,68 q40,-50 80,0" style="fill:none;stroke:var(--go);stroke-width:2;stroke-dasharray:4 3"/>
+      <text x="335" y="60" style="font:10px var(--sans);fill:var(--faint)" text-anchor="end">screen</text>
+      <!-- converging rays to a vertex angle w -->
+      <line x1="110" y1="70" x2="190" y2="180" style="stroke:var(--dim);stroke-width:1"/>
+      <line x1="190" y1="70" x2="190" y2="180" style="stroke:var(--dim);stroke-width:1"/>
+      <line x1="190" y1="70" x2="190" y2="180" style="stroke:var(--dim);stroke-width:1"/>
+      <path d="M183,160 A12,12 0 0 0 197,160" style="fill:none;stroke:var(--text);stroke-width:1"/>
+      <text x="190" y="155" style="font:12px var(--sans);fill:var(--text)" text-anchor="middle">w</text>
+    </svg>
+    <figcaption>Two Airy discs at the resolution limit; w is the subtended angle of separation. Original schematic.</figcaption>
+  </figure>
+
+  <div class="bg"><span class="callout-label">Background — this is the Rayleigh criterion</span>
+  The "centre of one Airy disc on the first dark ring of the other" rule is the <strong>Rayleigh criterion</strong> for resolution. It explains why a small pupil (or any small aperture) gives big Airy discs and therefore poor resolution: less detail can be separated.</div>
+
+  <!-- ============================================================= -->
+  <h2 id="acuity">11 · Testing visual acuity</h2>
+  <p>Clinically we want to measure the eye's resolving power — its <strong>visual acuity</strong>. The right test depends on the patient's age and ability.</p>
+
+  <h3>Infants and pre-verbal children</h3>
+  <p>Examine babies when <strong>alert and not hungry</strong>. Good fixation is <strong>CSM</strong> — central, steady and maintained. The best target is a face (the mother's), a toy, or a TV cartoon. Signs of poor acuity: strong eye preference (objecting when the good eye is covered), <span class="term">squint<span class="def">Strabismus — misalignment of the eyes.</span></span>, <span class="term">nystagmus<span class="def">Involuntary rhythmic to-and-fro eye movements; here a sign that vision is poor.</span></span>, roving gaze and eye-poking.</p>
+  <ul>
+    <li><strong>Visually directed reaching</strong> develops at 2–5 months; if vision is poor, movements look exploratory.</li>
+    <li>A child of <strong>≥15 months</strong> picking up a tiny "hundreds-and-thousands" sweet suggests near acuity ~<strong>6/24 or better</strong> and no serious defect — though good near acuity can still coexist with high <span class="term">myopia<span class="def">Short-sightedness: the eye focuses distant objects in front of the retina, so far things blur but near things may be seen clearly.</span></span>.</li>
+    <li><strong>Catford drum</strong> — a white cylinder of black dots of increasing size (acuities 6/6 to 2/60 at 60 cm), masked so one oscillating spot shows; following the spot indicates it's seen. <em>Overestimates</em> acuity (target moves; short working distance).</li>
+    <li><strong>STYCAR rolling balls</strong> — ten white polystyrene spheres (3.5 mm to 6 cm) rolled across a contrasting floor 3 m away; pursuit movements show they're seen. (Worth's ivory ball test is similar.)</li>
+    <li><strong>Preferential looking</strong> — a striped target (a black/white square-wave grating) is shown beside a plain grey target of equal size and average luminance; infants prefer to look at pattern, and better vision detects a finer grating.</li>
+    <li><span class="term">Visual evoked potentials<span class="def">VEPs — electrical responses recorded over the occipital (visual) cortex when the eye is stimulated, using a reversing grating or chequerboard. An objective, non-behavioural acuity measure.</span></span>.</li>
+  </ul>
+
+  <div class="bg"><span class="callout-label">Background — "square-wave" vs "sine-wave" grating</span>
+  A <strong>square-wave</strong> grating has sharp-edged black and white stripes (used for acuity/preferential looking and VEPs). A <strong>sine-wave</strong> grating fades gradually between light and dark with blurred edges (used for contrast sensitivity, §12). Same idea — stripes — but the edge profile differs.</div>
+
+  <h3>Matching and naming (older children and adults)</h3>
+  <p>An <span class="term">optotype<span class="def">A standardised symbol (letter, number or picture) whose correct identification corresponds to a defined level of visual acuity. Always black on a white background to maximise contrast.</span></span> is a symbol calibrated to an acuity level. Children too young to name letters can <em>match</em> a shown letter to a key card (examiner at 6 m or 3 m):</p>
+  <ul>
+    <li><strong>Kay's pictures</strong> / <strong>Cardiff cards</strong> — picture optotypes, usable from ~18–24 months.</li>
+    <li><strong>STYCAR letters</strong> — H, O, T, V, X (the letters children recognise first), up to ~3 years.</li>
+    <li><strong>Sheridan–Gardiner</strong> — seven letters, adding U and A.</li>
+  </ul>
+
+  <h3>The Snellen chart</h3>
+  <p>The most-used test. Its theory: the smallest object the eye can resolve subtends, at the eye's <span class="term">nodal point<span class="def">An optical reference point inside the eye through which a ray passes without changing direction. The angle a target subtends at the nodal point equals the angle its image subtends on the retina. (Defined fully later in optics.)</span></span>, the same angle as one cone — about <strong>one minute of arc</strong>.</p>
+
+  <div class="bg"><span class="callout-label">Background — minutes and seconds of arc</span>
+  Angles get subdivided like time: 1 degree = 60 <strong>minutes of arc (')</strong>; 1 minute = 60 <strong>seconds of arc (")</strong>. So 1' = 1/60° ≈ 0.0167°, and 1" is 1/3600 of a degree — tiny. Acuity is built on arcminutes; hyperacuity and stereoacuity (below) are measured in arcseconds.</div>
+
+  <p>Each Snellen letter is built on a <strong>5 × 5 grid</strong>: the whole letter subtends <strong>5'</strong> and each limb/gap subtends <strong>1'</strong> at the test distance. Each row is labelled with the distance (in metres) at which a normal eye should read it.</p>
+
+  <figure>
+    <svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Snellen letter on a 5 by 5 grid; whole letter 5 arcmin, each element 1 arcmin">
+      <g style="stroke:var(--line);stroke-width:1;fill:none">
+        <rect x="60" y="20" width="120" height="120"/>
+        <line x1="84" y1="20" x2="84" y2="140"/><line x1="108" y1="20" x2="108" y2="140"/>
+        <line x1="132" y1="20" x2="132" y2="140"/><line x1="156" y1="20" x2="156" y2="140"/>
+        <line x1="60" y1="44" x2="180" y2="44"/><line x1="60" y1="68" x2="180" y2="68"/>
+        <line x1="60" y1="92" x2="180" y2="92"/><line x1="60" y1="116" x2="180" y2="116"/>
+      </g>
+      <line x1="200" y1="20" x2="200" y2="140" style="stroke:var(--dim)"/>
+      <text x="212" y="84" style="font:12px var(--sans);fill:var(--dim)">5′</text>
+      <line x1="60" y1="155" x2="84" y2="155" style="stroke:var(--go)"/>
+      <text x="72" y="168" style="font:11px var(--sans);fill:var(--go)" text-anchor="middle">1′</text>
+    </svg>
+    <figcaption>Snellen optotype geometry. Original schematic.</figcaption>
+  </figure>
+
+  <p>So Snellen acuity is a fraction <code>test distance / distance a normal eye reads that row</code>. Read normally at <strong>6 m</strong> (20 feet):</p>
+  <ul>
+    <li><strong>6/6 (20/20)</strong> = normal; the numerator is the viewing distance.</li>
+    <li><strong>6/12 (20/40)</strong> = at 6 m you only manage the row a normal eye reads at 12 m.</li>
+    <li>Young adults often reach <strong>6/4</strong> (better than "normal").</li>
+  </ul>
+  <p>Children sometimes manage Snellen before age 5, and letter-matching before 4.</p>
+
+  <h3>LogMAR (e.g. Bailey–Lovie)</h3>
+  <p><strong>LogMAR = LOGarithm of the Minimum Angle of Resolution.</strong> These charts are more precise than Snellen because the letter size and spacing step regularly, with the <em>same number of letters on every line</em>, so results are comparable at any test distance.</p>
+
+  <div class="bg"><span class="callout-label">Background — reading the logMAR scale</span>
+  MAR = the smallest detail resolved, in arcminutes; logMAR = log₁₀(MAR). At 6/6 the detail is 1' so logMAR = log₁₀(1) = <strong>0.00</strong>. At 6/60 the detail is 10' so logMAR = log₁₀(10) = <strong>1.00</strong>. <em>Higher logMAR = worse vision</em> (the opposite intuition to Snellen). Each Bailey–Lovie line is 0.1 log units; each letter is worth 0.02.
+  <table class="tbl" style="margin-top:10px">
+    <tr><th>Snellen (6 m)</th><th>Snellen (ft)</th><th>logMAR</th></tr>
+    <tr><td>6/6</td><td>20/20</td><td class="n">0.00</td></tr>
+    <tr><td>6/12</td><td>20/40</td><td class="n">0.30</td></tr>
+    <tr><td>6/60</td><td>20/200</td><td class="n">1.00</td></tr>
+    <tr><td>6/4</td><td>20/13</td><td class="n">−0.18</td></tr>
+  </table>
+  </div>
+
+  <div class="exam"><span class="callout-label">Exam — calculator-free conversions</span>
+  No calculator in the exam, so memorise anchors and the few logs you need. <strong>logMAR = log₁₀(denominator ÷ 6)</strong> for a 6/x Snellen fraction. Useful logs: log 2 ≈ 0.30, log 3 ≈ 0.48, log 5 ≈ 0.70, log 10 = 1.00. So 6/12 → log 2 = 0.30; 6/18 → log 3 = 0.48; 6/30 → log 5 = 0.70; 6/60 → 1.00. Hold the direction in mind: <strong>0 is best, bigger is worse.</strong></div>
+
+  <h3>Vernier acuity (hyperacuity)</h3>
+  <p><span class="term">Vernier acuity<span class="def">The ability to detect a tiny sideways misalignment (offset) between two line segments — like reading a vernier scale. Tested with an offset square-wave grating.</span></span> is the smallest detectable <strong>offset of a line</strong>. We can spot an offset of just <strong>3–5 seconds of arc</strong> — finer than the Snellen limit, hence <strong>hyperacuity</strong>.</p>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>A patient reads at 6 m only the line a normal eye reads at 18 m. Give their Snellen and logMAR acuity.</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>Snellen 6/18. logMAR = log₁₀(18 ÷ 6) = log₁₀(3) ≈ <strong>0.48</strong>.</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="near">12 · Near, potential, contrast &amp; glare testing</h2>
+
+  <h3>Near visual acuity</h3>
+  <p>Tested at <strong>25–33 cm</strong>, using unrelated words or short passages. The <strong>British N system</strong> is based on the printers' <span class="term">point<span class="def">A typesetting unit for type size. One point = 1/72 inch. It originally specified the height of the metal block a letter was cast on.</span></span> system: 1 point = 1/72 inch, and N5 letters are cast on blocks 5/72 inch high. <strong>Times Roman</strong> is the standard font (printed size depends on font). Jaeger ("J") sizes are a poorer alternative because they don't follow a logical size progression.</p>
+
+  <h3>Potential visual acuity</h3>
+  <p>Used to predict how well an eye <em>could</em> see when the macula can't be examined (e.g. behind a <span class="term">cataract<span class="def">A clouding of the crystalline lens that scatters and blocks light, reducing vision. The commonest treatable cause of visual loss worldwide.</span></span>). Good potential acuity suggests surgery will help.</p>
+  <ul>
+    <li><strong>Pinhole test</strong> — the simplest.</li>
+    <li><span class="term">Blue field entoptic phenomenon<span class="def">An "entoptic" phenomenon is something you see that arises inside your own eye. Under diffuse blue light you can see your own moving white dots.</span></span> — moving white dots seen under diffuse blue light, thought to be light passing white blood cells in the perifoveal capillaries; their presence implies macular function is grossly intact.</li>
+    <li><strong>Interferometers</strong> — project laser light from two sources onto the retina; where they meet, interference produces a sine-wave grating the patient can report <em>if</em> the macula works.</li>
+    <li><strong>Potential acuity meter (PAM)</strong> — projects a letter chart onto the retina through a small aperture.</li>
+  </ul>
+
+  <h3>Contrast sensitivity</h3>
+  <p>Acuity charts use high-contrast black-on-white and don't capture the ability to see <strong>low-contrast</strong> objects (like faces). In cataract, glaucoma and <span class="term">optic neuritis<span class="def">Inflammation of the optic nerve, classically reducing vision and colour perception, often with pain on eye movement.</span></span>, acuity can be near-normal while contrast sensitivity is markedly reduced.</p>
+  <p>Measured with a <strong>sine-wave grating</strong> (gradual light↔dark transitions, blurred edges). Narrower stripes = higher <span class="term">spatial frequency<span class="def">How tightly packed the stripes are, usually in cycles per degree. High spatial frequency = fine stripes; low = broad stripes.</span></span>. Plotting spatial frequency against the lowest detectable contrast gives the <strong>contrast sensitivity curve</strong>; both very low and very high spatial frequencies need higher contrast to be seen (the curve peaks in the middle).</p>
+  <ul>
+    <li><strong>Pelli–Robson chart</strong> — letters of decreasing contrast.</li>
+    <li><strong>VISTECH chart</strong> — 40 circles of differing sine-wave gratings and contrasts; the subject reports each grating's orientation.</li>
+  </ul>
+
+  <h3>Glare testing</h3>
+  <p><strong>Glare</strong> is scattered light that reduces visual function — often the main complaint in corneal oedema or scarring, cataract, or <span class="term">posterior capsule opacification<span class="def">Clouding of the thin lens capsule left behind after cataract surgery — a common, easily treated late cause of glare and blur.</span></span>. Its impact depends on the glare source's position and intensity and on the media's light-scattering. <strong>Glare testing</strong> means measuring visual function (acuity, contrast sensitivity, colour) <em>in the presence of</em> a glare source.</p>
+
+  <div class="exam"><span class="callout-label">Exam</span>
+  Acuity ≠ visual function. The teaching point examiners want: cataract/glaucoma/optic neuritis can give <strong>near-normal Snellen acuity but reduced contrast sensitivity</strong>. Also: acuity uses square-wave gratings; contrast sensitivity uses sine-wave gratings.</div>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>How tall is the metal block for an N5 near-acuity letter, and which font is the N-system standard?</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>5/72 inch (since 1 point = 1/72 inch and N5 = 5 points). The standard font is Times Roman.</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="polar">13 · Polarisation, birefringence &amp; dichroism</h2>
+  <p>In ordinary light, the planes in which the rays vibrate are oriented randomly. In <span class="term">polarised<span class="def">Light whose waves all vibrate in a single plane, rather than in random orientations. Possible only because light is a transverse wave.</span></span> light, the wave motions all lie <strong>parallel</strong> to one another — one shared plane.</p>
+
+  <figure>
+    <svg viewBox="0 0 360 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="End-on view of non-polarised versus polarised light">
+      <text x="90" y="18" style="font:11px var(--sans);fill:var(--dim)" text-anchor="middle">non-polarised</text>
+      <g style="stroke:var(--accent);stroke-width:1.8">
+        <line x1="90" y1="50" x2="90" y2="120"/><line x1="55" y1="85" x2="125" y2="85"/>
+        <line x1="65" y1="60" x2="115" y2="110"/><line x1="115" y1="60" x2="65" y2="110"/>
+        <line x1="72" y1="52" x2="108" y2="118"/><line x1="108" y1="52" x2="72" y2="118"/>
+      </g>
+      <text x="270" y="18" style="font:11px var(--sans);fill:var(--go)" text-anchor="middle">polarised</text>
+      <g style="stroke:var(--go);stroke-width:1.8">
+        <line x1="250" y1="50" x2="250" y2="120"/><line x1="262" y1="50" x2="262" y2="120"/>
+        <line x1="274" y1="50" x2="274" y2="120"/><line x1="286" y1="50" x2="286" y2="120"/>
+      </g>
+    </svg>
+    <figcaption>Beam cross-sections (light travelling into the page). Original schematic.</figcaption>
+  </figure>
+
+  <h3>Producing polarised light</h3>
+  <ul>
+    <li><strong>By a polarising substance.</strong> Materials such as calcite crystals transmit only rays vibrating in one plane, so only a fraction of the light passes and what emerges is polarised. A polariser reduces intensity but <em>not</em> spectral composition (colour).</li>
+    <li><strong>By reflection.</strong> Light reflected from a flat surface (e.g. water) is polarised when the angle of incidence equals that surface's <span class="term">polarising angle<span class="def">The specific angle of incidence at which reflected light becomes fully plane-polarised. It depends on the surface's refractive index (the Brewster angle). At other angles the reflection is only partly polarised.</span></span>, which depends on the surface's <span class="term">refractive index<span class="def">A number describing how much a material slows and bends light (covered in later optics chapters). Higher index = light travels slower and bends more.</span></span>. At other angles the reflection is partly polarised. The reflected light's plane of polarisation lies <strong>parallel to the surface</strong> — and since everyday glare-surfaces (sea, wet roads) are horizontal, the glare is horizontally polarised.</li>
+  </ul>
+  <p><strong>Polarised sunglasses</strong> exploit this: they transmit only vertical polarisation, blocking the horizontally-polarised reflected glare from water and roads.</p>
+
+  <h3>Birefringence</h3>
+  <p><span class="term">Birefringence<span class="def">"Double refraction." A material with two refractive indices, which splits unpolarised light into two polarised beams travelling in different directions.</span></span>: some materials transmit waves vibrating parallel to their molecular structure but selectively <em>slow and redirect</em> waves vibrating perpendicular to it. <strong>Quartz</strong> is birefringent — it splits incident unpolarised light into two polarised beams going different ways, so it has <strong>two refractive indices</strong>.</p>
+
+  <h3>Dichroism</h3>
+  <p><span class="term">Dichroism<span class="def">A property where a material absorbs (rather than redirects) the light waves not aligned with its structure, so only one polarised beam emerges — weakened.</span></span>: dichroic materials <strong>absorb</strong> the waves not aligned with their structure, so a single, much-weakened polarised beam emerges. <strong>Tourmaline</strong> and <strong>Polaroid</strong> (fine iodine + quinine sulphate crystals embedded in plastic) are dichroic; Polaroid is the usual sunglass material.</p>
+
+  <div class="bg"><span class="callout-label">Background — birefringence vs dichroism in one line</span>
+  Birefringence <em>splits and redirects</em> into two beams (two refractive indices, no absorption); dichroism <em>absorbs</em> one component, leaving one weakened beam. Different mechanism, both yield polarised light.</div>
+
+  <p>Other ophthalmic uses of polarised light: dissociating the two eyes to assess binocular vision (e.g. the polarised <strong>Titmus</strong> stereotest, §14); producing <strong>Haidinger's brushes</strong> in pleoptics; and examining manufactured lenses for internal stress.</p>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>Why are polarised sunglasses oriented to block <em>horizontal</em> polarisation, and what's the structural difference between quartz and Polaroid in handling polarisation?</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>Glare reflected off horizontal surfaces (sea, wet roads) is horizontally polarised, so blocking that plane removes the glare. Quartz is <strong>birefringent</strong> (splits light into two redirected polarised beams; two refractive indices); Polaroid is <strong>dichroic</strong> (absorbs the unwanted plane, leaving one weakened beam).</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="stereo">14 · Stereoscopic vision</h2>
+  <p><span class="term">Stereopsis<span class="def">3-D depth perception generated by the brain fusing the two eyes' slightly different views of the same scene.</span></span> is the ability to fuse the two eyes' slightly different (disparate) images — which stimulate disparate retinal points within <span class="term">Panum's fusional areas<span class="def">Small regions around corresponding retinal points within which slightly disparate images can still be fused into one (with depth) rather than seen double.</span></span> — into a single percept <em>with depth</em>. It's graded by the smallest horizontal image disparity that still evokes depth, measured in <strong>seconds of arc</strong>.</p>
+  <ul>
+    <li>Normal <strong>stereoacuity ≈ 60 seconds of arc or better</strong>.</li>
+    <li>Very good vision: better than <strong>15"</strong> (the finest the Frisby offers; range 600–15").</li>
+    <li>Best where images land on the <strong>macula</strong> (highest resolving power) — so good stereoacuity is a product of central single binocular vision.</li>
+    <li><strong>Better than 250"</strong> excludes significant <span class="term">amblyopia<span class="def">"Lazy eye" — reduced vision in an eye that is structurally normal, due to abnormal visual development in childhood (e.g. from squint or unequal refractive error).</span></span>; <strong>worse than 250"</strong> may indicate it.</li>
+  </ul>
+
+  <h3>Clinical stereoacuity tests (UK common: Titmus, TNO, Frisby, Lang)</h3>
+  <ul>
+    <li><strong>Titmus</strong> (includes the Wirt fly) — uses <span class="term">vectographs<span class="def">A pair of images printed so that the light from each is plane-polarised at right angles; viewed through a polarising visor, each eye sees only its own image, creating disparity.</span></span>. The Wirt fly is the largest target; also graded animals and circles (one stands forward). Viewed at <strong>40 cm</strong>; range ~3000–40".</li>
+    <li><strong>Frisby</strong> — three clear plastic plates of different thickness; four panels of random shapes, one hiding a circle printed on the <em>back</em> surface. Purely three-dimensional, <strong>no glasses needed</strong>. At 40 cm the plates give 340/170/55"; adjusting distance extends the range to 600–15".</li>
+    <li><strong>TNO</strong> — random-dot <span class="term">anaglyphs<span class="def">A stereogram with the two views printed in red and green on white; through red-green glasses each eye sees only one view (as black), and the brain fuses them.</span></span> viewed with red-green glasses; range 480–15".</li>
+    <li><strong>Lang</strong> — fine vertical lines seen alternately by each eye through built-in cylindrical lens elements; random-dot displacement gives disparity 1200–550". Held parallel to the face (tilting gives monocular clues); normal reading distance.</li>
+  </ul>
+
+  <div class="exam"><span class="callout-label">Exam</span>
+  Worth knowing: <strong>normal stereoacuity ~60"</strong>; the <strong>250" amblyopia cut-off</strong>; that the <strong>Frisby and Lang need no special glasses</strong> (Frisby = real depth between plate surfaces; Lang = built-in cylindrical lenses), whereas <strong>Titmus uses polarised glasses</strong> and <strong>TNO uses red-green glasses</strong>.</div>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>Which two of the four common stereotests require no coloured/polarising glasses, and what makes each work?</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>Frisby (a true physical depth difference — the hidden circle is printed on the plate's back surface) and Lang (built-in cylindrical lens elements feed each eye a different image). Titmus needs polarised glasses; TNO needs red-green glasses.</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="photometry">15 · Measuring light: radiometry &amp; photometry</h2>
+  <p>Two parallel systems, which is why the units feel like a zoo:</p>
+  <ul>
+    <li><span class="term">Radiometry<span class="def">Physical measurement of radiant energy across the whole electromagnetic spectrum, as an absolute value — regardless of whether the eye can see it.</span></span> — measures the raw physical energy (any wavelength).</li>
+    <li><span class="term">Photometry<span class="def">Measurement weighted by the eye's spectral sensitivity — i.e. how much the light contributes to the sensation of brightness. More commonly used in visual science.</span></span> — measures light as the eye perceives it.</li>
+  </ul>
+  <p>The two are linked by <span class="term">luminous efficiency<span class="def">A per-wavelength conversion factor reflecting how strongly the eye responds to that wavelength. It links a radiometric (physical) unit to its photometric (perceived) equivalent.</span></span>. The eye's peak photopic sensitivity is at <strong>555 nm (yellow-green)</strong>, where <strong>1 watt of monochromatic light ≈ 685 lumens</strong> (maximum luminous efficiency). Sensitivity falls towards both ends of the spectrum, dropping to zero outside ~400–700 nm. For mixed (polychromatic) light, you sum the photometric equivalents of the component wavelengths.</p>
+
+  <div class="uncertain"><span class="callout-label">Uncertain — a figure to verify</span>
+  Elkington gives the luminous efficacy peak as <strong>685 lm/W</strong>. The modern SI value (defining the candela) is <strong>683 lm/W at 555 nm</strong> for photopic vision. The difference is small and historical; I'd revise from 685 to <strong>683</strong> for the modern definition, but check your current source for which the exam expects.</div>
+
+  <div class="bg"><span class="callout-label">Background — photopic vs scotopic (not in this chapter, but high-yield)</span>
+  555 nm is the <strong>photopic</strong> (cone, bright-light) peak. Under dark (<strong>scotopic</strong>, rod) conditions the peak shifts to ~<strong>507 nm</strong> (blue-green) — the Purkinje shift, why reds look black and blues relatively brighter at dusk. Elkington gives only the photopic figure here; the scotopic value is a settled add-on worth knowing.</div>
+
+  <h3>The four pairs of units</h3>
+  <table class="tbl">
+    <tr><th>What's measured</th><th>Radiometric</th><th>Photometric</th></tr>
+    <tr><td>Total energy emitted</td><td>radiant energy — joule</td><td>—</td></tr>
+    <tr><td>Total flow emitted (all directions)</td><td>radiant flux — watt (= J/s)</td><td>luminous flux — lumen (lm)</td></tr>
+    <tr><td>Flow per unit solid angle</td><td>radiant intensity — W/sr</td><td>luminous intensity — candela (cd = lm/sr)</td></tr>
+    <tr><td>Falling on a surface (per area)</td><td>irradiance — W/m²</td><td>illuminance — lux (lm/m²)</td></tr>
+    <tr><td>Leaving a surface, per area, in one direction</td><td>radiance — W/sr/m²</td><td>luminance — cd/m²</td></tr>
+  </table>
+
+  <div class="bg"><span class="callout-label">Background — what's a steradian (solid angle)?</span>
+  A <span class="term">steradian<span class="def">The unit of solid angle (sr) — the 3-D analogue of the radian. It's the cone-shaped angle at a sphere's centre that cuts out a patch of area r² on the sphere's surface.</span></span> measures a <em>cone</em> of directions rather than a flat angle. Because a whole sphere's surface is 4πr², a full sphere contains <strong>4π steradians</strong>. So a point source of <strong>1 candela</strong> (1 lm/sr) emitting in all directions puts out <strong>4π ≈ 12.57 lumens</strong> total. (For the calculator-free exam, remember 4π ≈ 12.57.)</div>
+
+  <div class="bg"><span class="callout-label">Background — candle → candela</span>
+  The old unit was the <em>candle</em> (a standard wax candle). The modern <strong>candela</strong> was defined via a black-body radiator at the freezing point of platinum, whose luminous intensity per cm² is 60 candelas — being 60× brighter than the standard candle. The key takeaway: <strong>candela = lumens per steradian</strong>, a measure of intensity <em>in one direction</em>, not total output.</div>
+
+  <h3>How illumination of a surface behaves</h3>
+  <p>Surface illumination falls off with distance and with the angle of the light:</p>
+  <ul>
+    <li><strong>Inverse-square law</strong> — illumination ∝ 1/d² (double the distance → a quarter the illumination).</li>
+    <li><strong>Cosine law</strong> — illumination ∝ cos i (i = angle of incidence; light striking at a slant is spread over more area).</li>
+  </ul>
+  <p>Combined: <code>E = (I · cos i) / d²</code>, where E = illumination, I = luminous intensity, i = angle of incidence, d = source-to-surface distance.</p>
+
+  <figure>
+    <svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Inverse square law: same light spread over 1, 4 and 9 squares at distances 1, 2, 3">
+      <circle cx="30" cy="80" r="6" style="fill:var(--accent)"/>
+      <line x1="36" y1="76" x2="360" y2="20" style="stroke:var(--line);stroke-width:1"/>
+      <line x1="36" y1="84" x2="360" y2="140" style="stroke:var(--line);stroke-width:1"/>
+      <rect x="120" y="64" width="32" height="32" style="fill:var(--accent);opacity:.45"/>
+      <rect x="220" y="48" width="64" height="64" style="fill:var(--accent);opacity:.22"/>
+      <rect x="300" y="28" width="96" height="96" style="fill:var(--accent);opacity:.12"/>
+      <g style="font:11px var(--sans);fill:var(--dim)" text-anchor="middle">
+        <text x="136" y="112">d=1 · ×1</text>
+        <text x="252" y="124">d=2 · ×¼</text>
+        <text x="348" y="136">d=3 · ×⅑</text>
+      </g>
+    </svg>
+    <figcaption>Inverse-square law: the same flux spreads over 1, 4, 9 units of area at distances 1, 2, 3. Original schematic.</figcaption>
+  </figure>
+
+  <h3>Diffusers and a couple of special units</h3>
+  <p>A <strong>uniformly diffusing surface</strong> reflects light equally in all directions; a <strong>perfect diffuser</strong> also reflects <em>all</em> incident light. Each point on it acts as a point source. <strong>Luminance</strong> = luminous intensity per unit <em>projected</em> area in a given direction (cd/m²); its radiometric twin is radiance (W/sr/m²). Because measuring in candelas is awkward, luminance is often compared with a uniform diffuser emitting 1 lumen per unit area:</p>
+  <ul>
+    <li><span class="term">Apostilb (asb)<span class="def">A unit of luminance: the luminance of a uniform diffuser emitting 1 lumen per square metre. Equivalently, 1 asb = 1/π cd/m². You'll meet it again in perimetry.</span></span> — 1 lm/m² of diffuse emission = 1 apostilb = <strong>1/π cd/m²</strong>.</li>
+    <li><span class="term">Troland<span class="def">A unit of retinal illumination: the retinal illumination when a surface of luminance 1 cd/m² is viewed through a 1 mm² entrance pupil (after correcting for the Stiles–Crawford effect). It accounts for how much light actually reaches the retina.</span></span> — a measure of <em>retinal</em> illumination (surface luminance 1 cd/m² through a 1 mm² pupil), corrected for the <span class="term">Stiles–Crawford effect<span class="def">Light entering through the pupil centre stimulates cones more effectively than light entering near the pupil edge — so where the light enters matters, not just how much.</span></span>.</li>
+  </ul>
+
+  <div class="exam"><span class="callout-label">Exam</span>
+  Pin down the photometric units and their SI names: <strong>flux = lumen; intensity = candela (lm/sr); illuminance = lux (lm/m²); luminance = cd/m².</strong> And three derivable facts: a <strong>1 cd</strong> point source emits <strong>4π lm</strong>; <strong>1 apostilb = 1/π cd/m²</strong>; illumination follows <strong>E = I cos i / d²</strong>.</div>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>A point source has luminous intensity 1 candela. (a) What total luminous flux does it emit? (b) If you double your distance from it, how does the illumination on your page change?</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>(a) 4π ≈ 12.57 lumens (1 cd = 1 lm/sr × 4π sr). (b) It falls to one-quarter (inverse-square law).</p></div>
+  </div>
+
+  <!-- ============================================================= -->
+  <h2 id="perimetry">16 · Automated perimetry</h2>
+  <p><span class="term">Perimetry<span class="def">Mapping the visual field by testing how dim a light spot the patient can detect at many positions — i.e. measuring the light sensitivity of corresponding retinal points.</span></span> measures retinal light sensitivity point-by-point: the patient detects light stimuli of varying intensity at corresponding positions in the visual field. Practical set-up: a standard <strong>background luminance of 31.5 apostilbs</strong>; the eye centred in the bowl (hemisphere); near correction worn; steady fixation; spots projected onto the inner surface.</p>
+  <p>Stimulus intensity ranges <strong>0.8–10 000 asb</strong>. This huge range is handled on a logarithmic scale in <strong>decibels (dB)</strong>, where <strong>1 log unit = 10 dB</strong> (a dim spot = many dB of attenuation; the brightest = 0 dB). Elkington states the 0.8–10 000 asb range corresponds to <strong>51 dB</strong>.</p>
+
+  <div class="uncertain"><span class="callout-label">Uncertain — the arithmetic doesn't quite close</span>
+  By the stated rule (10 dB per log unit), 0.8 → 10 000 asb is a ratio of 12 500 ≈ 4.1 log units ≈ <strong>~41 dB</strong>, not 51 dB. Getting 51 dB would need the dimmest stimulus near <strong>0.08 asb</strong> (a possible typographic slip in the source). I've reported Elkington's figures faithfully but flag the mismatch — verify the exact numbers against a current perimetry reference before quoting them.</div>
+
+  <div class="bg"><span class="callout-label">Background — why decibels at all?</span>
+  The eye's detectable intensity range is enormous, so a linear scale is unwieldy. A decibel here expresses <em>attenuation</em> of the maximum stimulus: higher dB = the spot was dimmer when the patient still saw it = better sensitivity. It's the same log-scale logic as sound decibels.</div>
+
+  <div class="qcheck"><span class="qlabel">Quick check</span>
+    <p>On a perimeter, does a <em>higher</em> decibel value at a test point mean better or worse sensitivity, and why?</p>
+    <button class="reveal">Show answer</button>
+    <div class="key"><p>Better. dB measures how much the maximum stimulus was dimmed and still seen — a higher dB means the patient detected a dimmer spot, i.e. greater retinal sensitivity at that point.</p></div>
+  </div>
+
+  <p class="verify">This is a transformed study summary, not the original text. Some figures here are settled background I added (clearly marked) and at least two source numbers carry flagged uncertainties. Verify high-yield facts — especially the photometric constant (683 vs 685 lm/W) and the perimetry dB range — against a trusted source before relying on them.</p>
+</div>
+<script>
+document.addEventListener('click',function(e){
+  var t=e.target.closest('.term');
+  if(t){e.stopPropagation();t.classList.toggle('open');return;}
+});
+document.querySelectorAll('.qcheck .reveal').forEach(function(b){
+  b.addEventListener('click',function(){b.closest('.qcheck').classList.toggle('open');});
+});
+</script>
+</body>
+</html>
