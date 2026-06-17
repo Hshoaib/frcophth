@@ -1,0 +1,1448 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c1414">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Theatre">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<title>Theatre — study command centre</title>
+<style>
+/* ============================================================
+   Design tokens
+   Base: dark teal-ink (clinical, calm, not pure black)
+   Action accent: amber. Load triad: go(green) / ease(amber) / rest(grey)
+   Data is set in mono for an instrument-readout character.
+   System fonts only — works offline from first open.
+   ============================================================ */
+:root{
+  --bg:#0c1414; --bg-2:#0f1a1a; --surface:#14201f; --surface-2:#1b2a28;
+  --line:#243634; --line-soft:#1a2826;
+  --text:#e9f0ee; --dim:#8fa6a3; --faint:#5d736f;
+  --accent:#f2a93b; --accent-soft:rgba(242,169,59,.14); --accent-line:rgba(242,169,59,.4);
+  --go:#57c79a; --go-soft:rgba(87,199,154,.14);
+  --ease:#e0a44a; --ease-soft:rgba(224,164,74,.14);
+  --rest:#6e8785; --rest-soft:rgba(110,135,133,.14);
+  --danger:#e0796a;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Menlo,Consolas,monospace;
+  --r:14px; --r-sm:10px;
+  --shell-max:760px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--sans);
+  font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600}
+
+/* ---------- App frame ---------- */
+.app{max-width:var(--shell-max);margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+header.top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:18px 18px 10px;position:sticky;top:0;background:linear-gradient(var(--bg),var(--bg) 70%,transparent);z-index:5;
+}
+.brand{display:flex;align-items:baseline;gap:9px}
+.brand b{font-size:17px;letter-spacing:.02em}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent-line);align-self:center}
+.sync{font-size:11px;color:var(--faint);font-family:var(--mono)}
+.gear{background:none;border:1px solid var(--line);color:var(--dim);width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:16px}
+.gear:hover{color:var(--text);border-color:var(--accent-line)}
+
+main{flex:1;padding:4px 18px 100px}
+
+/* ---------- Capacity band: the signature element ---------- */
+.capacity{
+  border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin:6px 0 18px;
+  background:var(--surface);position:relative;overflow:hidden;
+}
+.capacity .date{font-size:14px;color:var(--dim)}
+.capacity .state{display:flex;align-items:center;gap:12px;margin-top:8px}
+.capacity .label{font-size:22px;font-weight:600;letter-spacing:-.01em}
+.capacity .sub{font-size:13px;color:var(--dim);margin-top:4px}
+.segs{display:flex;gap:5px;margin-left:auto}
+.seg{width:26px;height:8px;border-radius:3px;background:var(--line)}
+.cap-normal .seg{background:var(--go)}
+.cap-minimum .seg:nth-child(1),.cap-minimum .seg:nth-child(2){background:var(--ease)}
+.cap-zero .seg:nth-child(1){background:var(--rest)}
+.capacity::before{content:"";position:absolute;inset:0 auto 0 0;width:4px}
+.cap-normal::before{background:var(--go)} .cap-minimum::before{background:var(--ease)} .cap-zero::before{background:var(--rest)}
+
+/* ---------- Countdown / stat strip ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:22px}
+.stat{border:1px solid var(--line-soft);background:var(--bg-2);border-radius:var(--r-sm);padding:11px 10px;text-align:left}
+.stat .n{font-family:var(--mono);font-size:21px;font-weight:600;line-height:1}
+.stat .k{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:6px}
+.stat.warn .n{color:var(--accent)}
+
+/* ---------- Section headings ---------- */
+.shead{display:flex;align-items:center;gap:10px;margin:24px 2px 12px}
+.shead h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:600;margin:0}
+.shead .rule{flex:1;height:1px;background:var(--line-soft)}
+.shead .count{font-family:var(--mono);font-size:12px;color:var(--faint)}
+
+/* ---------- Item cards ---------- */
+.item{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:13px 14px;margin-bottom:10px;transition:opacity .2s,border-color .2s}
+.item .chips{display:flex;gap:6px;align-items:center;margin-bottom:7px;flex-wrap:wrap}
+.chip{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--dim);font-weight:600}
+.chip.frcophth{color:var(--accent);border-color:var(--accent-line);background:var(--accent-soft)}
+.chip.msra{color:var(--go);border-color:rgba(87,199,154,.4);background:var(--go-soft)}
+.chip.other{color:var(--rest);border-color:rgba(110,135,133,.4)}
+.chip.est{margin-left:auto;color:var(--faint);border:none;font-family:var(--mono);text-transform:none;letter-spacing:0}
+.item .title{font-size:16px;font-weight:600;line-height:1.35}
+.item .ref{font-family:var(--mono);font-size:12.5px;color:var(--dim);margin-top:3px}
+.actions{display:flex;gap:7px;margin-top:12px}
+.act{flex:1;border:1px solid var(--line);background:var(--bg-2);color:var(--dim);border-radius:9px;padding:8px;font-size:13px;font-weight:600;transition:.15s}
+.act:hover{color:var(--text);border-color:var(--accent-line)}
+.act[aria-pressed="true"].done{background:var(--go-soft);color:var(--go);border-color:rgba(87,199,154,.5)}
+.act[aria-pressed="true"].partial{background:var(--ease-soft);color:var(--ease);border-color:rgba(224,164,74,.5)}
+.act[aria-pressed="true"].defer{background:var(--rest-soft);color:var(--text);border-color:rgba(110,135,133,.5)}
+.item.is-done{opacity:.55} .item.is-done .title{text-decoration:line-through;text-decoration-color:var(--faint)}
+.item.is-defer{opacity:.6}
+.item.is-overdue{border-color:rgba(224,164,74,.45)}
+.shead.overdue-head h2{color:var(--ease)}
+.shead.overdue-head .count{color:var(--ease)}
+.duewas{font-size:11px;letter-spacing:.04em;color:var(--ease);margin-bottom:8px;font-weight:600}
+.note{margin-top:10px;width:100%;background:var(--bg-2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px 10px;font-family:var(--sans);font-size:13.5px;resize:vertical;min-height:38px}
+.stamp{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:8px}
+.reflecttoggle{display:inline-block;margin-top:10px;background:none;border:none;color:var(--faint);font-size:12.5px;font-weight:600;padding:4px 0;font-family:var(--sans)}
+.reflecttoggle:hover{color:var(--dim)}
+.reflecttoggle.has{color:var(--accent)}
+.reflect{display:block;margin-top:6px;width:100%;background:var(--bg-2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:8px 10px;font-family:var(--sans);font-size:13.5px;resize:vertical;min-height:46px}
+
+/* ---------- Anki + capture rows ---------- */
+.row-card{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:13px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.row-card .grow{flex:1}
+.row-card .t{font-weight:600}
+.row-card .s{font-size:12.5px;color:var(--dim)}
+.toggle{border:1px solid var(--line);background:var(--bg-2);color:var(--dim);border-radius:99px;padding:9px 16px;font-weight:600;font-size:13.5px;white-space:nowrap}
+.toggle[aria-pressed="true"]{background:var(--go-soft);color:var(--go);border-color:rgba(87,199,154,.5)}
+.capture{display:flex;gap:8px;margin-bottom:10px}
+.capture input{flex:1;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r);padding:12px 14px;font-size:15px;font-family:var(--sans)}
+.capture button{background:var(--accent);color:#1a1205;border:none;border-radius:var(--r);padding:0 18px;font-weight:700}
+.cap-list{list-style:none;padding:0;margin:0}
+.cap-list li{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--line-soft);border-radius:var(--r-sm);background:var(--bg-2);margin-bottom:7px;font-size:14px}
+.cap-list .x{margin-left:auto;background:none;border:none;color:var(--faint);font-size:16px;line-height:1}
+.cap-list .when{font-family:var(--mono);font-size:11px;color:var(--faint);flex-shrink:0}
+
+/* ---------- Empty state ---------- */
+.empty{border:1px dashed var(--line);border-radius:var(--r);padding:30px 22px;text-align:center;color:var(--dim);background:var(--bg-2)}
+.empty h3{color:var(--text);margin:0 0 6px;font-size:17px}
+.empty p{margin:0 0 16px;font-size:14px}
+.btn{background:var(--accent);color:#1a1205;border:none;border-radius:10px;padding:11px 18px;font-weight:700;font-size:14px}
+.btn.ghost{background:none;color:var(--text);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent-line)}
+
+/* ---------- Settings ---------- */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--dim);margin-bottom:6px}
+.field input,.field textarea{width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r-sm);padding:11px 12px;font-size:15px;font-family:var(--sans)}
+.field textarea{font-family:var(--mono);font-size:13px;min-height:120px;resize:vertical}
+.btnrow{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}
+.hint{font-size:12.5px;color:var(--faint);margin-top:6px;line-height:1.45}
+.warn-box{border:1px solid var(--ease);background:var(--ease-soft);border-radius:var(--r-sm);padding:11px 13px;font-size:13px;color:#f1d8a8;margin:14px 0}
+.card{border:1px solid var(--line);border-radius:var(--r);padding:16px;background:var(--surface);margin-bottom:14px}
+.card h3{margin:0 0 4px;font-size:15px}
+.card p.sub{margin:0 0 12px;font-size:13px;color:var(--dim)}
+
+/* ---------- Stub views ---------- */
+.stub{border:1px dashed var(--line);border-radius:var(--r);padding:40px 22px;text-align:center;color:var(--dim);background:var(--bg-2)}
+.stub .big{font-size:30px;margin-bottom:10px}
+.stub h3{color:var(--text);margin:0 0 6px}
+
+/* ---------- Plan / calendar ---------- */
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin:6px 0 8px}
+.cal-title{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.cal-nav{background:none;border:1px solid var(--line);color:var(--dim);width:40px;height:40px;border-radius:10px;font-size:20px;line-height:1}
+.cal-nav:hover{color:var(--text);border-color:var(--accent-line)}
+.cal-today-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.cal-today-row .btn{padding:7px 14px;font-size:13px}
+.cal-legend{display:flex;gap:12px;font-size:11px;color:var(--faint)}
+.cal-legend .lg{display:flex;align-items:center;gap:5px}
+.cal-legend .lg::before{content:"";width:10px;height:10px;border-radius:3px;display:inline-block}
+.lg.load-normal::before{background:var(--go)} .lg.load-minimum::before{background:var(--ease)} .lg.load-zero::before{background:var(--rest)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px}
+.cal-wd{text-align:center;font-size:10px;letter-spacing:.06em;color:var(--faint);text-transform:uppercase;font-weight:600;padding-bottom:2px}
+.cal-cell{position:relative;aspect-ratio:1/1;border:1px solid var(--line-soft);background:var(--bg-2);border-radius:9px;padding:5px 6px;display:flex;flex-direction:column;align-items:flex-start;color:var(--text);overflow:hidden}
+.cal-cell.empty{border:none;background:none;pointer-events:none}
+.cal-cell.load-normal{background:var(--go-soft);border-color:rgba(87,199,154,.25)}
+.cal-cell.load-minimum{background:var(--ease-soft);border-color:rgba(224,164,74,.25)}
+.cal-cell.load-zero{background:var(--rest-soft);border-color:rgba(110,135,133,.3)}
+.cal-cell.is-today{outline:2px solid var(--accent);outline-offset:-2px}
+.cal-cell.is-sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.cal-cell:hover:not(.empty){border-color:var(--accent-line)}
+.cal-dn{font-family:var(--mono);font-size:13px;font-weight:600;line-height:1}
+.cal-label{display:block;width:100%;font-size:9px;line-height:1.2;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-marks{margin-top:auto;display:flex;align-items:center;gap:5px}
+.cal-count{font-family:var(--mono);font-size:11px;color:var(--dim);font-weight:600}
+.cal-count.done{color:var(--go)} .cal-count.over{color:var(--ease)}
+.cal-ev{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.cal-ev.dl{background:var(--danger)}
+
+.loadpick{display:flex;gap:6px}
+.loadpick .lp{flex:1;border:1px solid var(--line);background:var(--bg-2);color:var(--dim);border-radius:9px;padding:9px 4px;font-weight:600;font-size:13px}
+.loadpick .lp.on{color:var(--text);border-color:var(--accent-line);background:var(--accent-soft)}
+.loadpick .lp:hover{color:var(--text)}
+.addrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.addrow input:not([type=checkbox]){flex:1;min-width:150px;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r-sm);padding:11px 12px;font-size:14px;font-family:var(--sans)}
+.addrow .btn{padding:11px 16px}
+.chk{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--dim);white-space:nowrap}
+.ev-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line-soft);border-radius:var(--r-sm);background:var(--bg-2);margin-bottom:7px}
+.ev-row .ev-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.ev-row.deadline .ev-dot{background:var(--danger)}
+.ev-title{flex:1;font-size:14px}
+.ev-tag{font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--danger);margin-left:8px;border:1px solid rgba(224,121,106,.4);padding:1px 6px;border-radius:99px}
+.ev-row .x{background:none;border:none;color:var(--faint);font-size:18px;line-height:1;cursor:pointer}
+.ev-row .x:hover{color:var(--danger)}
+.addtask{margin-top:10px;border:1px solid var(--line-soft);border-radius:var(--r-sm);padding:4px 12px 12px;background:var(--bg-2)}
+.addtask summary{cursor:pointer;font-size:13.5px;color:var(--dim);font-weight:600;padding:9px 0;list-style:none}
+.addtask summary::-webkit-details-marker{display:none}
+.addtask summary:hover{color:var(--text)}
+.addtask .field input{width:100%}
+.addtask-grid{display:grid;grid-template-columns:1fr 1fr 78px;gap:8px;margin-bottom:10px}
+.addtask-grid select,.addtask-grid input{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r-sm);padding:10px;font-size:14px;font-family:var(--sans)}
+.removeitem{display:block;margin-top:10px;background:none;border:none;color:var(--faint);font-size:12px;font-weight:600;padding:2px 0}
+.removeitem:hover{color:var(--danger)}
+
+/* ---------- Progress ---------- */
+.bigstat{display:flex;align-items:baseline;gap:10px;margin:2px 0 10px}
+.bs-n{font-size:30px;font-weight:700;color:var(--accent);line-height:1}
+.bs-n .bs-d{font-size:18px;color:var(--faint)}
+.bs-k{font-size:13px;color:var(--dim)}
+.cov-track{margin-bottom:20px}
+.cov-th{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.cov-name{font-weight:600;font-size:14px}
+.cov-summary{font-size:11px;color:var(--faint)}
+.cov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:7px}
+.cov-tile{border:1px solid var(--line);border-radius:9px;padding:9px 10px;text-align:left;background:var(--bg-2);color:var(--text);min-height:56px;display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+.cov-tile .ct-name{font-size:12px;line-height:1.2;text-transform:capitalize}
+.cov-tile .ct-state{font-size:9px;letter-spacing:.05em;text-transform:uppercase;font-weight:700}
+.cov-tile.cov-0{border-style:dashed} .cov-tile.cov-0 .ct-name{color:var(--dim)} .cov-tile.cov-0 .ct-state{color:var(--faint)}
+.cov-tile.cov-1{border-color:rgba(224,121,106,.5);background:rgba(224,121,106,.10)} .cov-tile.cov-1 .ct-state{color:var(--danger)}
+.cov-tile.cov-2{border-color:rgba(224,164,74,.5);background:var(--ease-soft)} .cov-tile.cov-2 .ct-state{color:var(--ease)}
+.cov-tile.cov-3{border-color:rgba(87,199,154,.5);background:var(--go-soft)} .cov-tile.cov-3 .ct-state{color:var(--go)}
+.cov-add{margin-top:9px} .cov-add .btn{padding:9px 14px}
+
+.chartcard{padding:12px 8px 4px}
+.qc{width:100%;height:auto;display:block}
+.qc-grid{stroke:var(--line-soft);stroke-width:1}
+.qc-axis{fill:var(--faint);font-size:9px;font-family:var(--mono)}
+.qc-cap{fill:var(--faint);font-size:9.5px;font-family:var(--sans);letter-spacing:.04em}
+.qc-line{fill:none;stroke:var(--dim);stroke-width:1.6}
+.qc-dot{stroke:var(--bg);stroke-width:1.5}
+.qc-dot.frcophth{fill:var(--accent)} .qc-dot.msra{fill:var(--go)} .qc-dot.other{fill:var(--rest)}
+.q-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line-soft);border-radius:var(--r-sm);background:var(--bg-2);margin-bottom:7px}
+.q-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.q-dot.frcophth{background:var(--accent)} .q-dot.msra{background:var(--go)} .q-dot.other{background:var(--rest)}
+.q-src{flex:1;font-size:14px} .q-meta{font-size:12px;color:var(--dim)} .q-date{font-size:11px;color:var(--faint)}
+.qadd{margin-top:6px}
+.qadd-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.qadd-grid input,.qadd-grid select{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r-sm);padding:10px;font-size:14px;font-family:var(--sans)}
+.qadd-grid #qSrc{grid-column:1/3}
+
+.s-row{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--line-soft);border-radius:var(--r-sm);background:var(--bg-2);margin-bottom:7px}
+.s-check{flex:0 0 26px;height:26px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--go);font-size:15px;font-weight:700;display:grid;place-items:center}
+.s-check.on{background:var(--go-soft);border-color:rgba(87,199,154,.5)}
+.s-body{flex:1;min-width:0}
+.s-top{font-size:12px;color:var(--dim)} .s-sup{font-size:14px;margin-top:2px}
+.span{font-size:12.5px;border-radius:var(--r-sm);padding:9px 12px;margin-bottom:10px;border:1px solid var(--line)}
+.span.ok{color:var(--go);border-color:rgba(87,199,154,.4);background:var(--go-soft)}
+.span.warn{color:var(--ease);border-color:rgba(224,164,74,.4);background:var(--ease-soft)}
+.sadd-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.sadd-grid input,.sadd-note{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r-sm);padding:10px;font-size:14px;font-family:var(--sans)}
+.sadd-note{width:100%}
+
+.m-row{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--line-soft);border-radius:var(--r-sm);background:var(--bg-2);margin-bottom:7px}
+.m-check{flex:0 0 24px;height:24px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--go);font-size:14px;font-weight:700;display:grid;place-items:center}
+.m-check.on{background:var(--go-soft);border-color:rgba(87,199,154,.5)}
+.m-title{flex:1;font-size:14px}
+.m-row.done .m-title{text-decoration:line-through;color:var(--faint)}
+.m-when{font-size:11px;color:var(--faint)} .m-over{font-size:11px;color:var(--danger);font-weight:600}
+.a-dots{display:flex;gap:5px;margin:4px 0 8px;flex-wrap:wrap}
+.a-dot{width:16px;height:16px;border-radius:4px;background:var(--line)}
+.a-dot.on{background:var(--go)}
+.q-row .x,.s-row .x,.m-row .x{background:none;border:none;color:var(--faint);font-size:18px;line-height:1;cursor:pointer}
+.q-row .x:hover,.s-row .x:hover,.m-row .x:hover{color:var(--danger)}
+
+/* ---------- Journal ---------- */
+.jcomposer{padding:14px}
+.energy{display:flex;align-items:center;gap:7px;margin-bottom:11px}
+.energy .elabel{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);font-weight:600;margin-right:4px}
+.edot{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:var(--bg-2);padding:0;cursor:pointer}
+.edot.on{background:var(--accent);border-color:var(--accent)}
+.edot.sm{width:11px;height:11px;cursor:default}
+.edot.sm.on{background:var(--accent);border-color:var(--accent)}
+.jtags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px}
+.jtag{border:1px solid var(--line);background:var(--bg-2);color:var(--dim);border-radius:99px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer}
+.jtag.on{color:var(--text);border-color:var(--accent-line);background:var(--accent-soft)}
+.jtext{width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r-sm);padding:12px;font-size:15px;font-family:var(--sans);min-height:92px;resize:vertical}
+.jr-review{background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer;font-size:12.5px;font-family:var(--sans)}
+.j-card{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:13px 14px;margin-bottom:10px}
+.j-card.is-reflection{border-style:dashed;background:var(--bg-2)}
+.j-card.is-review{border-color:var(--accent-line)}
+.j-head{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.j-when{font-size:11.5px;color:var(--faint)}
+.j-from,.j-review-badge{font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:1px 7px;border-radius:99px;border:1px solid var(--line);color:var(--faint)}
+.j-review-badge{color:var(--accent);border-color:var(--accent-line)}
+.j-ctx{font-size:11.5px;color:var(--dim)}
+.j-head .x{margin-left:auto;background:none;border:none;color:var(--faint);font-size:18px;line-height:1;cursor:pointer}
+.j-head .x:hover{color:var(--danger)}
+.j-meta{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.j-energy{display:flex;gap:4px;align-items:center}
+.jtag-chip{font-size:11px;color:var(--dim);border:1px solid var(--line);padding:2px 9px;border-radius:99px}
+.j-task{font-size:13.5px;margin-bottom:7px;color:var(--dim)}
+.j-text{font-size:14.5px;line-height:1.5}
+.syncstat{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--text);margin:4px 0}
+.syncdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.syncdot.ok{background:var(--go)} .syncdot.warn{background:var(--ease)}
+
+
+/* ---------- Bottom / side nav ---------- */
+nav.tabs{
+  position:fixed;bottom:0;left:0;right:0;background:var(--bg-2);border-top:1px solid var(--line);
+  display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:6;
+}
+nav.tabs a{
+  flex:1;text-decoration:none;color:var(--faint);text-align:center;padding:6px 2px;border-radius:10px;
+  font-size:10px;letter-spacing:.04em;display:flex;flex-direction:column;align-items:center;gap:3px;font-weight:600;
+}
+nav.tabs a .ic{font-size:19px;line-height:1}
+nav.tabs a.active{color:var(--accent)}
+nav.tabs a:hover{color:var(--text)}
+
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);background:var(--surface-2);border:1px solid var(--line);
+  color:var(--text);padding:11px 18px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;z-index:20;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (min-width:720px){
+  .app{flex-direction:row;max-width:980px;padding-left:0}
+  nav.tabs{position:sticky;top:0;left:auto;right:auto;bottom:auto;flex-direction:column;justify-content:flex-start;
+    width:200px;height:100vh;border-top:none;border-right:1px solid var(--line);padding:22px 12px;gap:4px}
+  nav.tabs a{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;font-size:14px;padding:11px 14px;text-align:left}
+  nav.tabs a .ic{font-size:18px}
+  .main-col{flex:1;max-width:760px}
+  main{padding-bottom:40px}
+  header.top{position:static}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="tabs" id="tabs">
+    <a href="#/today"    data-v="today"><span class="ic">◎</span>Today</a>
+    <a href="#/plan"     data-v="plan"><span class="ic">▦</span>Plan</a>
+    <a href="#/library"  data-v="library"><span class="ic">▤</span>Library</a>
+    <a href="#/progress" data-v="progress"><span class="ic">▱</span>Progress</a>
+    <a href="#/journal"  data-v="journal"><span class="ic">✎</span>Journal</a>
+    <a href="#/settings" data-v="settings"><span class="ic">⚙</span>Settings</a>
+  </nav>
+
+  <div class="main-col">
+    <header class="top">
+      <div class="brand"><span class="dot"></span><b>Theatre</b></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="sync" id="syncState">local only</span>
+        <button class="gear" id="gearBtn" aria-label="Settings">⚙</button>
+      </div>
+    </header>
+    <main id="view" aria-live="polite"></main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<input type="file" id="planFile" accept=".json,application/json" hidden>
+<input type="file" id="dataFile" accept=".json,application/json" hidden>
+
+<script>
+"use strict";
+/* =========================================================================
+   Theatre — slice 1: shell + Today + plan import/export + IndexedDB
+   No localStorage; all state in IndexedDB. Designed for GitHub Pages.
+   ========================================================================= */
+
+const SCHEMA_VERSION = 1;
+const STORES = {
+  plan:       {keyPath:"id"},     // study/admin items from the rota chat
+  days:       {keyPath:"date"},   // per-day load level + label
+  events:     {keyPath:"id"},
+  journal:    {keyPath:"id"},
+  ankiLog:    {keyPath:"date"},   // {date, done}
+  qbankLog:   {keyPath:"id"},
+  coverage:   {keyPath:"key"},
+  sessions:   {keyPath:"id"},
+  milestones: {keyPath:"id"},
+  inbox:      {keyPath:"id"},      // quick capture
+  settings:   {keyPath:"key"},
+  meta:       {keyPath:"key"}
+};
+
+/* ---------- IndexedDB helpers ---------- */
+let _db=null;
+function openDB(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open("theatre",1);
+    r.onupgradeneeded=e=>{
+      const db=e.target.result;
+      for(const [name,opt] of Object.entries(STORES))
+        if(!db.objectStoreNames.contains(name)) db.createObjectStore(name,opt);
+    };
+    r.onsuccess=e=>{_db=e.target.result;res(_db)};
+    r.onerror=e=>rej(e.target.error);
+  });
+}
+function tx(store,mode="readonly"){return _db.transaction(store,mode).objectStore(store);}
+const dbGet=(s,k)=>new Promise((res,rej)=>{const q=tx(s).get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
+const dbAll=(s)=>new Promise((res,rej)=>{const q=tx(s).getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(q.error)});
+const dbPut=(s,v)=>new Promise((res,rej)=>{const q=tx(s,"readwrite").put(v);q.onsuccess=()=>{markDirty(s);res(v)};q.onerror=()=>rej(q.error)});
+const dbDel=(s,k)=>new Promise((res,rej)=>{const q=tx(s,"readwrite").delete(k);q.onsuccess=()=>{markDirty(s);res()};q.onerror=()=>rej(q.error)});
+const dbClear=(s)=>new Promise((res,rej)=>{const q=tx(s,"readwrite").clear();q.onsuccess=()=>{markDirty(s);res()};q.onerror=()=>rej(q.error)});
+async function setSetting(key,value){return dbPut("settings",{key,value});}
+async function getSetting(key,fallback){const r=await dbGet("settings",key);return r?r.value:fallback;}
+
+/* ---------- date utils (local, no UTC drift) ---------- */
+function todayISO(){const d=new Date();return isoOf(d);}
+function isoOf(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+function daysUntil(iso){
+  if(!iso) return null;
+  const [y,m,d]=iso.split("-").map(Number);
+  const target=new Date(y,m-1,d), now=new Date();
+  const t0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  return Math.round((target-t0)/86400000);
+}
+function prettyDate(iso){
+  const [y,m,d]=iso.split("-").map(Number);
+  const dt=new Date(y,m-1,d);
+  return dt.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+}
+function prettyShort(iso){
+  const [y,m,d]=iso.split("-").map(Number);
+  return new Date(y,m-1,d).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
+}
+function nowStamp(){return new Date().toLocaleString("en-GB",{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short"});}
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>"x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+/* ---------- toast ---------- */
+let _tt;
+function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove("show"),2200);}
+
+/* =========================================================================
+   Router
+   ========================================================================= */
+const VIEWS={today:renderToday,plan:renderPlan,library:stub,progress:renderProgress,journal:renderJournal,settings:renderSettings};
+function currentView(){const h=location.hash.replace(/^#\/?/,"")||"today";return VIEWS[h]?h:"today";}
+async function route(){
+  const v=currentView();
+  document.querySelectorAll("nav.tabs a").forEach(a=>a.classList.toggle("active",a.dataset.v===v));
+  const el=document.getElementById("view");
+  el.innerHTML="";
+  await VIEWS[v](el);
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",route);
+document.getElementById("gearBtn").onclick=()=>location.hash="#/settings";
+
+/* =========================================================================
+   TODAY
+   ========================================================================= */
+const LOAD={
+  normal:{label:"Full study day",cls:"cap-normal",sub:"Capacity for a normal block."},
+  minimum:{label:"Minimum mode",cls:"cap-minimum",sub:"Protect the habit — a little is enough today."},
+  zero:{label:"Rest / blackout",cls:"cap-zero",sub:"No study scheduled. Switch off."}
+};
+
+async function renderToday(el){
+  const iso=todayISO();
+  const [allItems,day,exams,ankiToday,inbox]=await Promise.all([
+    dbAll("plan"), dbGet("days",iso), getSetting("exams",{}), dbGet("ankiLog",iso), dbAll("inbox")
+  ]);
+  const todays=allItems.filter(i=>i.scheduledDate===iso)
+    .sort((a,b)=>(a.status==="done")-(b.status==="done"));
+  const overdue=allItems
+    .filter(i=>i.scheduledDate<iso && (i.status==="scheduled"||i.status==="partial"))
+    .sort((a,b)=>a.scheduledDate<b.scheduledDate?-1:1);
+  const load=(day&&LOAD[day.loadLevel])?day.loadLevel:"normal";
+  const planLoaded=allItems.length>0;
+
+  // capacity band
+  const L=LOAD[load];
+  const band=`
+   <section class="capacity ${L.cls}">
+     <div class="date mono">${esc(prettyDate(iso))}</div>
+     <div class="state">
+       <div>
+         <div class="label">${esc(L.label)}</div>
+         <div class="sub">${day&&day.label?esc(day.label)+" · ":""}${esc(L.sub)}</div>
+       </div>
+       <div class="segs" aria-hidden="true"><span class="seg"></span><span class="seg"></span><span class="seg"></span></div>
+     </div>
+   </section>`;
+
+  // stat strip
+  const dFrc=daysUntil(exams.frcophth_part1), dMsra=daysUntil(exams.msra);
+  const sessions=(await dbAll("sessions")).filter(s=>s.signedOff).length;
+  const streak=await ankiStreak();
+  const stats=`
+   <div class="stats">
+     <div class="stat ${dFrc!=null&&dFrc<60?"warn":""}"><div class="n">${dFrc==null?"–":dFrc}</div><div class="k">days · FRCOphth</div></div>
+     <div class="stat ${dMsra!=null&&dMsra<60?"warn":""}"><div class="n">${dMsra==null?"–":dMsra}</div><div class="k">days · MSRA</div></div>
+     <div class="stat"><div class="n">${sessions}/10</div><div class="k">sessions</div></div>
+     <div class="stat"><div class="n">${streak}</div><div class="k">anki streak</div></div>
+   </div>`;
+
+  // overdue (past-dated, not resolved) — surfaced so a step can't quietly slip
+  let overdueHtml="";
+  if(overdue.length){
+    overdueHtml=`<div class="shead overdue-head"><h2>Overdue</h2><div class="rule"></div>`
+      + `<span class="count">${overdue.length} not done</span></div>`
+      + overdue.map(i=>itemCard(i,true)).join("");
+  }
+
+  // items
+  let itemsHtml;
+  if(!planLoaded){
+    itemsHtml=`<div class="empty"><h3>No plan loaded yet</h3>
+      <p>Import the plan JSON from your rota chat to see today's focus items.</p>
+      <button class="btn" id="emptyImport">Import a plan</button></div>`;
+  } else if(todays.length===0){
+    itemsHtml=`<div class="empty"><h3>Nothing scheduled today</h3>
+      <p>${load==="zero"?"Blackout day — rest is the plan.":"Enjoy it, or pull something forward from Plan."}</p></div>`;
+  } else {
+    const done=todays.filter(i=>i.status==="done").length;
+    const totalMin=todays.reduce((s,i)=>s+(i.estMinutes||0),0);
+    itemsHtml=`<div class="shead"><h2>Focus</h2><div class="rule"></div>
+      <span class="count">${done}/${todays.length} · ${totalMin} min</span></div>`
+      + todays.map(i=>itemCard(i,false)).join("");
+  }
+
+  // anki + capture
+  const ankiHtml=`
+   <div class="shead"><h2>Daily</h2><div class="rule"></div></div>
+   <div class="row-card">
+     <div class="grow"><div class="t">Anki review</div><div class="s">Spaced repetition — log it once it's done.</div></div>
+     <button class="toggle" id="ankiBtn" aria-pressed="${ankiToday&&ankiToday.done?"true":"false"}">${ankiToday&&ankiToday.done?"✓ Done":"Mark done"}</button>
+   </div>`;
+
+  const recent=inbox.sort((a,b)=>b.at-a.at).slice(0,5);
+  const captureHtml=`
+   <div class="shead"><h2>Quick capture</h2><div class="rule"></div></div>
+   <div class="capture">
+     <input id="capInput" placeholder="Jot a fact or question…" autocomplete="off">
+     <button id="capBtn">Add</button>
+   </div>
+   <ul class="cap-list">${recent.map(c=>`<li><span class="when mono">${esc(new Date(c.at).toLocaleDateString("en-GB",{day:"2-digit",month:"short"}))}</span><span>${esc(c.text)}</span><button class="x" data-cap="${c.id}" aria-label="Delete">×</button></li>`).join("")}</ul>`;
+
+  el.innerHTML=band+stats+overdueHtml+itemsHtml+ankiHtml+captureHtml;
+
+  // wire item cards (shared with Plan view) + Today-only controls
+  wireItems(el);
+  const ai=document.getElementById("emptyImport"); if(ai) ai.onclick=()=>document.getElementById("planFile").click();
+  document.getElementById("ankiBtn").onclick=toggleAnki;
+  document.getElementById("capBtn").onclick=addCapture;
+  document.getElementById("capInput").addEventListener("keydown",e=>{if(e.key==="Enter")addCapture();});
+  el.querySelectorAll("[data-cap]").forEach(b=>b.onclick=async()=>{await dbDel("inbox",b.dataset.cap);route();});
+}
+
+/* Shared item-card wiring — used by both Today and Plan */
+function wireItems(container){
+  container.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>setStatus(b.dataset.id,b.dataset.act));
+  container.querySelectorAll("[data-note]").forEach(t=>t.onchange=()=>saveNote(t.dataset.note,t.value));
+  container.querySelectorAll("[data-reflect]").forEach(t=>t.onchange=()=>saveReflect(t.dataset.reflect,t.value));
+  container.querySelectorAll(".reflecttoggle").forEach(b=>b.onclick=()=>{
+    const sel='textarea[data-reflect="'+b.dataset.toggle.replace(/"/g,'\\"')+'"]';
+    const ta=container.querySelector(sel); if(!ta) return;
+    if(ta.hasAttribute("hidden")){ta.removeAttribute("hidden");ta.focus();b.setAttribute("aria-expanded","true");}
+    else{ta.setAttribute("hidden","");b.setAttribute("aria-expanded","false");}
+  });
+  container.querySelectorAll("[data-remove]").forEach(b=>b.onclick=async()=>{
+    if(confirm("Remove this hand-added task?")){await dbDel("plan",b.dataset.remove);route();}
+  });
+}
+
+function itemCard(i,showDue){
+  const isDone=i.status==="done", isPart=i.status==="partial", isDef=i.status==="deferred";
+  let cls=isDone?"is-done":isDef?"is-defer":"";
+  if(showDue) cls+=" is-overdue";
+  const stamp=i.completedAt?`<div class="stamp">${i.status} · ${esc(nowStampFromISO(i.completedAt))}</div>`:"";
+  const dueLine=showDue?`<div class="duewas mono">⚠ was due ${esc(prettyShort(i.scheduledDate))}</div>`:"";
+  const noteField=isPart?`<textarea class="note" data-note="${i.id}" placeholder="What's left to finish?">${esc(i.note||"")}</textarea>`:"";
+  const hasRef=!!(i.reflect&&i.reflect.trim());
+  const reflectBlock=`<button class="reflecttoggle ${hasRef?"has":""}" data-toggle="${i.id}" aria-expanded="${hasRef}">✎ ${hasRef?"Thought logged":"Add a thought"}</button>
+    <textarea class="reflect" data-reflect="${i.id}" placeholder="How did it go? Harder or easier than expected? Anything to revisit?" ${hasRef?"":"hidden"}>${esc(i.reflect||"")}</textarea>`;
+  return `<article class="item ${cls}" id="it-${i.id}">
+    ${dueLine}
+    <div class="chips">
+      <span class="chip ${esc(i.track)}">${esc(i.track)}</span>
+      ${i.topic?`<span class="chip">${esc(i.topic)}</span>`:""}
+      ${i.estMinutes?`<span class="chip est">~${i.estMinutes}m</span>`:""}
+    </div>
+    <div class="title">${esc(i.title)}</div>
+    <div class="ref">${esc(i.resource||"")}${i.ref?" · "+esc(i.ref):""}</div>
+    <div class="actions">
+      <button class="act done"    data-act="done"    data-id="${i.id}" aria-pressed="${isDone}">Done</button>
+      <button class="act partial" data-act="partial" data-id="${i.id}" aria-pressed="${isPart}">Partial</button>
+      <button class="act defer"   data-act="deferred" data-id="${i.id}" aria-pressed="${isDef}">Defer</button>
+    </div>
+    ${noteField}${reflectBlock}${stamp}
+    ${i.manual?`<button class="removeitem" data-remove="${i.id}">Remove hand-added task</button>`:""}
+  </article>`;
+}
+function nowStampFromISO(iso){const d=new Date(iso);return d.toLocaleString("en-GB",{hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short"});}
+
+async function setStatus(id,status){
+  const it=await dbGet("plan",id); if(!it) return;
+  if(it.status===status){ it.status="scheduled"; it.completedAt=null; }
+  else { it.status=status; it.completedAt=new Date().toISOString(); }
+  await dbPut("plan",it);
+  route();
+}
+async function saveNote(id,val){const it=await dbGet("plan",id);if(it){it.note=val;await dbPut("plan",it);}}
+async function saveReflect(id,val){const it=await dbGet("plan",id);if(it){it.reflect=val;await dbPut("plan",it);}}
+
+async function toggleAnki(){
+  const iso=todayISO();
+  const cur=await dbGet("ankiLog",iso);
+  await dbPut("ankiLog",{date:iso,done:!(cur&&cur.done)});
+  route();
+}
+async function ankiStreak(){
+  const logs=await dbAll("ankiLog");
+  const done=new Set(logs.filter(l=>l.done).map(l=>l.date));
+  let n=0; const d=new Date();
+  if(!done.has(isoOf(d))) d.setDate(d.getDate()-1); // today not yet logged is OK
+  while(done.has(isoOf(d))){n++;d.setDate(d.getDate()-1);}
+  return n;
+}
+async function addCapture(){
+  const inp=document.getElementById("capInput");
+  const text=inp.value.trim(); if(!text) return;
+  await dbPut("inbox",{id:uid(),text,at:Date.now()});
+  inp.value=""; route();
+}
+
+/* =========================================================================
+   PLAN IMPORT / EXPORT  (the round-trip contract, schema v1)
+   ========================================================================= */
+async function importPlan(json){
+  let p;
+  try{ p=typeof json==="string"?JSON.parse(json):json; }
+  catch(e){ toast("Couldn't read that — not valid JSON."); return; }
+  if(p.schemaVersion!==SCHEMA_VERSION){ toast(`Unexpected schema version (${p.schemaVersion}). Expected ${SCHEMA_VERSION}.`); return; }
+  if(!Array.isArray(p.items)){ toast("No items[] found in plan."); return; }
+
+  // Replace current plan with the incoming one (the rota chat carries unfinished items forward by id).
+  await dbClear("plan"); await dbClear("days");
+  for(const raw of p.items){
+    await dbPut("plan",{
+      id:raw.id, track:raw.track||"other", topic:raw.topic||"", resource:raw.resource||"",
+      ref:raw.ref||"", title:raw.title||raw.ref||raw.id, scheduledDate:raw.scheduledDate||todayISO(),
+      estMinutes:raw.estMinutes||0, status:raw.status||"scheduled",
+      completedAt:raw.completedAt||null, note:raw.note||null, reflect:raw.reflect||null
+    });
+  }
+  if(p.days) for(const [date,d] of Object.entries(p.days)) await dbPut("days",{date,loadLevel:d.loadLevel||"normal",label:d.label||""});
+  if(p.exams) await setSetting("exams",p.exams);
+  await setSetting("planMeta",{planId:p.planId||null,generatedAt:p.generatedAt||null});
+  await dbPut("meta",{key:"lastImportRaw",value:p,at:Date.now()});
+  toast(`Plan imported · ${p.items.length} items`);
+  location.hash="#/today"; route();
+}
+
+async function exportPlan(){
+  const [items,days,exams,meta]=await Promise.all([
+    dbAll("plan"), dbAll("days"), getSetting("exams",{}), getSetting("planMeta",{})
+  ]);
+  if(items.length===0){ toast("Nothing to export yet."); return; }
+  const out={
+    schemaVersion:SCHEMA_VERSION,
+    planId:meta.planId||todayISO(),
+    generatedAt:meta.generatedAt||new Date().toISOString(),
+    exams,
+    days:Object.fromEntries(days.map(d=>[d.date,{loadLevel:d.loadLevel,label:d.label}])),
+    items:items.map(i=>({
+      id:i.id,track:i.track,topic:i.topic,resource:i.resource,ref:i.ref,title:i.title,
+      scheduledDate:i.scheduledDate,estMinutes:i.estMinutes,status:i.status,
+      completedAt:i.completedAt,note:i.note,reflect:i.reflect||null
+    }))
+  };
+  return JSON.stringify(out,null,2);
+}
+
+/* =========================================================================
+   SETTINGS
+   ========================================================================= */
+async function renderSettings(el){
+  const exams=await getSetting("exams",{});
+  const meta=await getSetting("planMeta",{});
+  el.innerHTML=`
+   <div class="shead"><h2>Plan</h2><div class="rule"></div></div>
+   <div class="card">
+     <h3>Import plan from rota chat</h3>
+     <p class="sub">Paste the plan JSON, or load a .json file.</p>
+     <div class="warn-box">Importing <b>replaces</b> your current plan. Export your completions first if you haven't pasted them back to the rota chat yet.</div>
+     <div class="field"><textarea id="planPaste" placeholder='{ "schemaVersion": 1, "items": [ … ] }'></textarea></div>
+     <div class="btnrow">
+       <button class="btn" id="pasteImport">Import pasted JSON</button>
+       <button class="btn ghost" id="fileImport">Load .json file…</button>
+     </div>
+   </div>
+   <div class="card">
+     <h3>Export plan</h3>
+     <p class="sub">Same JSON, same ids, now carrying what you actually completed — paste this back into the rota chat to re-plan.</p>
+     <div class="btnrow">
+       <button class="btn" id="copyExport">Copy to clipboard</button>
+       <button class="btn ghost" id="dlExport">Download .json</button>
+     </div>
+     ${meta.planId?`<p class="hint mono">current plan: ${esc(meta.planId)} · generated ${esc(meta.generatedAt||"?")}</p>`:""}
+   </div>
+
+   <div class="shead"><h2>Exam dates</h2><div class="rule"></div></div>
+   <div class="card">
+     <p class="sub">Drives the countdowns. Updated automatically when a plan carries dates, but you can set them here.</p>
+     <div class="field"><label for="exFrc">FRCOphth Part 1</label><input type="date" id="exFrc" value="${esc(exams.frcophth_part1||"")}"></div>
+     <div class="field"><label for="exMsra">MSRA</label><input type="date" id="exMsra" value="${esc(exams.msra||"")}"></div>
+     <div class="btnrow"><button class="btn" id="saveExams">Save dates</button></div>
+   </div>
+
+   <div class="shead"><h2>Sync</h2><div class="rule"></div></div>
+   <div class="card" id="syncCard"></div>
+
+   <div class="shead"><h2>Data</h2><div class="rule"></div></div>
+   <div class="card">
+     <h3>Backup</h3>
+     <p class="sub">A manual safety net. Your data also syncs to Google Drive if connected above.</p>
+     <div class="btnrow">
+       <button class="btn ghost" id="dlAll">Export all data</button>
+       <button class="btn ghost" id="upAll">Import all data…</button>
+       <button class="btn ghost" id="wipe" style="color:var(--danger);border-color:rgba(224,121,106,.4)">Erase everything</button>
+     </div>
+     <p class="hint">Backups and Drive sync exclude device sync settings, so restoring never breaks another device's connection.</p>
+   </div>`;
+
+  // wire
+  document.getElementById("pasteImport").onclick=()=>{const v=document.getElementById("planPaste").value.trim();if(v)importPlan(v);};
+  document.getElementById("fileImport").onclick=()=>document.getElementById("planFile").click();
+  document.getElementById("copyExport").onclick=async()=>{const j=await exportPlan();if(j){try{await navigator.clipboard.writeText(j);toast("Plan copied to clipboard");}catch(e){toast("Copy failed — use Download instead");}}};
+  document.getElementById("dlExport").onclick=async()=>{const j=await exportPlan();if(j)download(`plan-${todayISO()}.json`,j);};
+  document.getElementById("saveExams").onclick=async()=>{
+    const ex=await getSetting("exams",{});
+    ex.frcophth_part1=document.getElementById("exFrc").value||null;
+    ex.msra=document.getElementById("exMsra").value||null;
+    await setSetting("exams",ex); toast("Exam dates saved");
+  };
+  document.getElementById("dlAll").onclick=exportAllData;
+  document.getElementById("upAll").onclick=()=>document.getElementById("dataFile").click();
+  document.getElementById("wipe").onclick=wipeAll;
+  renderSyncCard();
+}
+
+/* ---------- sync card (re-renders itself after each action) ---------- */
+let pendingConflict=null;
+function renderSyncCard(){
+  const card=document.getElementById("syncCard"); if(!card||!syncCfg) return;
+  const connected=syncCfg.connected;
+  let html=`<h3>Google Drive</h3>
+    <p class="sub">Syncs across your devices using the non-sensitive <span class="mono">drive.appdata</span> scope — your data sits in a hidden app folder in your own Drive, nothing else is accessible.</p>`;
+  if(pendingConflict){
+    html+=`<div class="warn-box">This device and Drive both changed since the last sync. Keep which version?
+      <div class="btnrow" style="margin-top:8px">
+        <button class="btn" id="cfKeep">Keep this device</button>
+        <button class="btn ghost" id="cfCloud">Use Drive copy</button>
+      </div></div>`;
+  }
+  if(!connected){
+    html+=`<div class="field"><label for="gClient">Google OAuth client ID</label>
+      <input id="gClient" value="${esc(syncCfg.clientId||"")}" placeholder="xxxxx.apps.googleusercontent.com" autocomplete="off"></div>
+      <div class="btnrow"><button class="btn" id="gConnect">Connect Drive</button></div>
+      <details class="addtask" style="margin-top:12px"><summary>How to get a client ID</summary>
+        <p class="hint" style="margin:6px 0">In Google Cloud Console: create a project → enable the <b>Google Drive API</b> → OAuth consent screen (External, add yourself as a test user) → Credentials → create an <b>OAuth client ID</b> of type <b>Web application</b> → add your GitHub Pages URL (e.g. <span class="mono">https://you.github.io</span>) under <b>Authorised JavaScript origins</b> → paste the client ID here. No verification needed while you're the only user.</p>
+      </details>`;
+  } else {
+    html+=`<div class="syncstat"><span class="syncdot ${syncCfg.dirtySince>syncCfg.lastSyncAt?"warn":"ok"}"></span>${esc(syncBadgeText())}</div>
+      <label class="chk" style="margin:10px 0;display:flex"><input type="checkbox" id="gAuto" ${syncCfg.auto?"checked":""}> auto-sync after changes</label>
+      <div class="btnrow">
+        <button class="btn" id="gSync">Sync now</button>
+        <button class="btn ghost" id="gDisconnect">Disconnect</button>
+      </div>`;
+  }
+  card.innerHTML=html;
+
+  const cId=card.querySelector("#gClient");
+  const conn=card.querySelector("#gConnect");
+  if(conn) conn.onclick=async()=>{
+    const id=cId.value.trim(); if(!id){toast("Paste your client ID first");return;}
+    syncCfg.clientId=id; tokenClient=null; gToken=null; await saveSyncCfg();
+    conn.disabled=true; conn.textContent="Connecting…";
+    try{
+      const r=await syncNow(true);
+      if(r&&r.conflict){pendingConflict=r.remote;}
+      syncCfg.connected=true; await saveSyncCfg();
+      toast(typeof r==="string"?r:"Connected");
+    }catch(e){toast("Connect failed: "+e.message);}
+    updateSyncBadge(); renderSyncCard();
+  };
+  const sync=card.querySelector("#gSync");
+  if(sync) sync.onclick=async()=>{
+    sync.disabled=true; sync.textContent="Syncing…";
+    try{const r=await syncNow(false); if(r&&r.conflict){pendingConflict=r.remote;} else toast(r);}
+    catch(e){toast("Sync failed: "+e.message);}
+    updateSyncBadge(); renderSyncCard();
+  };
+  const auto=card.querySelector("#gAuto");
+  if(auto) auto.onchange=async()=>{syncCfg.auto=auto.checked;await saveSyncCfg();};
+  const dis=card.querySelector("#gDisconnect");
+  if(dis) dis.onclick=async()=>{syncCfg.connected=false;gToken=null;tokenClient=null;await saveSyncCfg();updateSyncBadge();renderSyncCard();toast("Disconnected (data stays on this device)");};
+  const keep=card.querySelector("#cfKeep");
+  if(keep) keep.onclick=async()=>{const rem=pendingConflict;pendingConflict=null;try{await resolveConflict("device",rem);toast("Kept this device");}catch(e){toast("Failed: "+e.message);}updateSyncBadge();renderSyncCard();};
+  const cloud=card.querySelector("#cfCloud");
+  if(cloud) cloud.onclick=async()=>{const rem=pendingConflict;pendingConflict=null;try{await resolveConflict("cloud",rem);toast("Using Drive copy");}catch(e){toast("Failed: "+e.message);}updateSyncBadge();renderSyncCard();route();};
+}
+
+/* ---------- full data backup ---------- */
+async function exportAllData(){
+  const dump={_app:"theatre",_schema:SCHEMA_VERSION,_at:new Date().toISOString()};
+  for(const name of DATA_STORES) dump[name]=await dbAll(name);
+  download(`theatre-backup-${todayISO()}.json`,JSON.stringify(dump,null,2));
+  toast("Backup downloaded");
+}
+async function importAllData(text){
+  let d; try{d=JSON.parse(text);}catch(e){toast("Not a valid backup file");return;}
+  if(d._app!=="theatre"){toast("That doesn't look like a Theatre backup");return;}
+  for(const name of DATA_STORES){
+    if(!Array.isArray(d[name])) continue;
+    await dbClear(name);
+    for(const rec of d[name]) await dbPut(name,rec);
+  }
+  toast("Backup restored"); location.hash="#/today"; route();
+}
+async function wipeAll(){
+  if(!confirm("Erase all local data? This cannot be undone (export a backup first).")) return;
+  for(const name of DATA_STORES) await dbClear(name);
+  await seed(); toast("All data erased"); location.hash="#/today"; route();
+}
+function download(name,text){
+  const b=new Blob([text],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+/* ---------- file inputs ---------- */
+document.getElementById("planFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>importPlan(r.result);r.readAsText(f);e.target.value="";};
+document.getElementById("dataFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>importAllData(r.result);r.readAsText(f);e.target.value="";};
+
+/* =========================================================================
+   PLAN & CALENDAR  (slice 2)
+   Month grid tinted by load level + day-detail with items, events, manual add
+   ========================================================================= */
+let planMonth=null;    // Date at first-of-displayed-month
+let planSelected=null; // iso string of selected day
+
+async function renderPlan(el){
+  const today=todayISO();
+  if(!planMonth){const d=new Date();planMonth=new Date(d.getFullYear(),d.getMonth(),1);}
+  if(!planSelected) planSelected=today;
+
+  const [items,days,events]=await Promise.all([dbAll("plan"),dbAll("days"),dbAll("events")]);
+  const byDate={},dayMap={},evByDate={};
+  for(const it of items){(byDate[it.scheduledDate]=byDate[it.scheduledDate]||[]).push(it);}
+  for(const d of days) dayMap[d.date]=d;
+  for(const e of events){(evByDate[e.date]=evByDate[e.date]||[]).push(e);}
+
+  const year=planMonth.getFullYear(),month=planMonth.getMonth();
+  const monthLabel=planMonth.toLocaleDateString("en-GB",{month:"long",year:"numeric"});
+  const startOffset=(new Date(year,month,1).getDay()+6)%7; // Monday-first
+  const daysInMonth=new Date(year,month+1,0).getDate();
+
+  let cells="";
+  for(let i=0;i<startOffset;i++) cells+=`<div class="cal-cell empty"></div>`;
+  for(let dn=1;dn<=daysInMonth;dn++){
+    const iso=`${year}-${String(month+1).padStart(2,"0")}-${String(dn).padStart(2,"0")}`;
+    const dm=dayMap[iso],load=dm?dm.loadLevel:null;
+    const its=byDate[iso]||[],evs=evByDate[iso]||[];
+    const outstanding=its.filter(i=>i.status==="scheduled"||i.status==="partial").length;
+    const overdueHere=iso<today&&outstanding>0;
+    const allDone=its.length>0&&outstanding===0;
+    let marks="";
+    if(its.length) marks+=`<span class="cal-count ${overdueHere?"over":allDone?"done":""}">${its.length}</span>`;
+    if(evs.length) marks+=`<span class="cal-ev ${evs.some(e=>e.kind==="deadline")?"dl":""}"></span>`;
+    const cls=["cal-cell",load?"load-"+load:"",iso===today?"is-today":"",iso===planSelected?"is-sel":""].filter(Boolean).join(" ");
+    const dLabel=dm&&dm.label?dm.label:"";
+    cells+=`<button class="${cls}" data-day="${iso}"${dLabel?` title="${esc(dLabel)}"`:""}>`
+      +`<span class="cal-dn">${dn}</span>`
+      +(dLabel?`<span class="cal-label">${esc(dLabel)}</span>`:"")
+      +(marks?`<span class="cal-marks">${marks}</span>`:"")
+      +`</button>`;
+  }
+
+  const grid=`
+   <div class="cal-head">
+     <button class="cal-nav" data-mo="-1" aria-label="Previous month">‹</button>
+     <div class="cal-title">${esc(monthLabel)}</div>
+     <button class="cal-nav" data-mo="1" aria-label="Next month">›</button>
+   </div>
+   <div class="cal-today-row">
+     <button class="btn ghost cal-jump">Jump to today</button>
+     <div class="cal-legend"><span class="lg load-normal">Full</span><span class="lg load-minimum">Minimum</span><span class="lg load-zero">Rest</span></div>
+   </div>
+   <div class="cal-grid">
+     ${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d=>`<div class="cal-wd">${d}</div>`).join("")}
+     ${cells}
+   </div>`;
+
+  el.innerHTML=grid+dayDetailHtml(planSelected,dayMap[planSelected],byDate[planSelected]||[],evByDate[planSelected]||[]);
+
+  el.querySelectorAll("[data-mo]").forEach(b=>b.onclick=()=>{planMonth=new Date(year,month+Number(b.dataset.mo),1);renderPlan(el);});
+  el.querySelector(".cal-jump").onclick=()=>{const d=new Date();planMonth=new Date(d.getFullYear(),d.getMonth(),1);planSelected=todayISO();renderPlan(el);};
+  el.querySelectorAll("[data-day]").forEach(b=>b.onclick=()=>{planSelected=b.dataset.day;renderPlan(el);});
+  wireItems(el);
+  wireDayDetail(el);
+}
+
+function dayDetailHtml(iso,dm,items,events){
+  const load=dm?dm.loadLevel:"",label=dm?dm.label:"";
+  const evHtml=events.length?events.map(eventRow).join(""):`<p class="hint">No events on this day.</p>`;
+  const totalMin=items.reduce((s,i)=>s+(i.estMinutes||0),0);
+  const sorted=[...items].sort((a,b)=>(a.status==="done")-(b.status==="done"));
+  const itemsHtml=items.length?sorted.map(i=>itemCard(i)).join(""):`<p class="hint">No study items scheduled.</p>`;
+  return `
+   <div class="shead"><h2>${esc(prettyDate(iso))}</h2><div class="rule"></div>${items.length?`<span class="count">${totalMin} min</span>`:""}</div>
+   <div class="card">
+     <div class="field"><label>Day load</label>
+       <div class="loadpick">
+         <button class="lp ${load==="normal"?"on":""}" data-load="normal">Full</button>
+         <button class="lp ${load==="minimum"?"on":""}" data-load="minimum">Minimum</button>
+         <button class="lp ${load==="zero"?"on":""}" data-load="zero">Rest</button>
+         <button class="lp ${!load?"on":""}" data-load="">Clear</button>
+       </div>
+     </div>
+     <div class="field"><label for="dayLabel">Label (shift / life event)</label>
+       <input id="dayLabel" value="${esc(label)}" placeholder="e.g. Long day, Parents visiting" autocomplete="off"></div>
+   </div>
+
+   <div class="shead"><h2>Events</h2><div class="rule"></div></div>
+   ${evHtml}
+   <div class="addrow">
+     <input id="evTitle" placeholder="Add an event or deadline…" autocomplete="off">
+     <label class="chk"><input type="checkbox" id="evDeadline"> deadline</label>
+     <button class="btn" id="evAdd">Add</button>
+   </div>
+
+   <div class="shead"><h2>Study items</h2><div class="rule"></div></div>
+   ${itemsHtml}
+   <details class="addtask"><summary>＋ Add a task by hand</summary>
+     <div class="field"><input id="tkTitle" placeholder="Task title" autocomplete="off"></div>
+     <div class="addtask-grid">
+       <select id="tkTrack"><option value="frcophth">FRCOphth</option><option value="msra">MSRA</option><option value="other">Other</option></select>
+       <input id="tkTopic" placeholder="topic (optional)" autocomplete="off">
+       <input id="tkEst" type="number" min="0" placeholder="mins" inputmode="numeric">
+     </div>
+     <div class="btnrow"><button class="btn" id="tkAdd">Add task</button></div>
+     <p class="hint">Hand-added tasks behave like any other item and flow to the rota chat on export, so it can carry them forward.</p>
+   </details>`;
+}
+
+function eventRow(e){
+  return `<div class="ev-row ${e.kind==="deadline"?"deadline":""}">
+    <span class="ev-dot"></span>
+    <span class="ev-title">${esc(e.title)}${e.kind==="deadline"?`<span class="ev-tag">deadline</span>`:""}</span>
+    <button class="x" data-evdel="${e.id}" aria-label="Delete event">×</button>
+  </div>`;
+}
+
+function wireDayDetail(el){
+  const iso=planSelected;
+  el.querySelectorAll("[data-load]").forEach(b=>b.onclick=()=>setDayLoad(iso,b.dataset.load,el));
+  const lbl=el.querySelector("#dayLabel"); if(lbl) lbl.onchange=()=>setDayLabel(iso,lbl.value);
+  const evAdd=el.querySelector("#evAdd"); if(evAdd) evAdd.onclick=()=>addEvent(iso,el);
+  const evTitle=el.querySelector("#evTitle"); if(evTitle) evTitle.addEventListener("keydown",e=>{if(e.key==="Enter")addEvent(iso,el);});
+  el.querySelectorAll("[data-evdel]").forEach(b=>b.onclick=()=>delEvent(b.dataset.evdel,el));
+  const tkAdd=el.querySelector("#tkAdd"); if(tkAdd) tkAdd.onclick=()=>addTask(iso,el);
+}
+
+async function setDayLoad(iso,load,el){
+  const cur=await dbGet("days",iso)||{date:iso,loadLevel:"",label:""};
+  cur.loadLevel=load; await dbPut("days",cur); renderPlan(el);
+}
+async function setDayLabel(iso,label){
+  const cur=await dbGet("days",iso)||{date:iso,loadLevel:"",label:""};
+  cur.label=label; await dbPut("days",cur);
+}
+async function addEvent(iso,el){
+  const t=el.querySelector("#evTitle").value.trim(); if(!t) return;
+  const deadline=el.querySelector("#evDeadline").checked;
+  await dbPut("events",{id:uid(),date:iso,title:t,kind:deadline?"deadline":"general"});
+  renderPlan(el);
+}
+async function delEvent(id,el){await dbDel("events",id);renderPlan(el);}
+async function addTask(iso,el){
+  const title=el.querySelector("#tkTitle").value.trim();
+  if(!title){toast("Give the task a title");return;}
+  const track=el.querySelector("#tkTrack").value;
+  const topic=el.querySelector("#tkTopic").value.trim();
+  const est=parseInt(el.querySelector("#tkEst").value,10)||0;
+  const slug=title.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,30);
+  const id=`manual-${slug||"task"}-${Math.random().toString(36).slice(2,6)}`;
+  await dbPut("plan",{id,track,topic,resource:"Added by hand",ref:"",title,scheduledDate:iso,estMinutes:est,status:"scheduled",completedAt:null,note:null,reflect:null,manual:true});
+  renderPlan(el); toast("Task added");
+}
+
+/* =========================================================================
+   PROGRESS  (slice 3)
+   Coverage map · question-bank trend · clinical sessions · milestones · Anki
+   ========================================================================= */
+const FRCOPHTH_TOPICS=["optics","anatomy","embryology","physiology","biochemistry","cell biology","pathology","microbiology","immunology","pharmacology","genetics","ocular motility","investigations","statistics"];
+const MSRA_TOPICS=["cardiology","respiratory","gastroenterology","neurology","endocrinology","renal","rheumatology","musculoskeletal","dermatology","ENT","ophthalmology","psychiatry","paediatrics","obstetrics & gynae","infectious disease","haematology","pharmacology","professional dilemmas"];
+const COV_STATES=["Not started","Shaky","Okay","Confident"];
+
+function shortDM(iso){const [y,m,d]=iso.split("-").map(Number);return new Date(y,m-1,d).toLocaleDateString("en-GB",{day:"numeric",month:"short"});}
+
+async function renderProgress(el){
+  const [coverage,qbank,sessions,milestones,ankiLogs,planItems]=await Promise.all([
+    dbAll("coverage"),dbAll("qbankLog"),dbAll("sessions"),dbAll("milestones"),dbAll("ankiLog"),dbAll("plan")
+  ]);
+  const covMap={}; coverage.forEach(c=>covMap[c.track+":"+c.topic]=c.rating||0);
+
+  // ---- coverage heatmap ----
+  const covHtml=["frcophth","msra"].map(track=>{
+    const canon=track==="frcophth"?FRCOPHTH_TOPICS:MSRA_TOPICS;
+    const planT=[...new Set(planItems.filter(i=>i.track===track&&i.topic).map(i=>i.topic))];
+    const covT=coverage.filter(c=>c.track===track).map(c=>c.topic);
+    const topics=[...new Set([...canon,...planT,...covT])];
+    const counts=[0,0,0,0];
+    const tiles=topics.map(t=>{const r=covMap[track+":"+t]||0;counts[r]++;
+      return `<button class="cov-tile cov-${r}" data-track="${esc(track)}" data-topic="${esc(t)}"><span class="ct-name">${esc(t)}</span><span class="ct-state">${COV_STATES[r]}</span></button>`;}).join("");
+    const label=track==="frcophth"?"FRCOphth Part 1":"MSRA";
+    return `<div class="cov-track">
+      <div class="cov-th"><span class="cov-name">${label}</span><span class="cov-summary mono">${counts[3]} confident · ${counts[2]} okay · ${counts[1]} shaky · ${counts[0]} not started</span></div>
+      <div class="cov-grid">${tiles}</div>
+      <div class="addrow cov-add"><input id="covAdd-${track}" placeholder="Add a topic…" autocomplete="off"><button class="btn ghost" data-covadd="${track}">Add</button></div>
+    </div>`;
+  }).join("");
+
+  // ---- question banks ----
+  const qsorted=[...qbank].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
+  const chart=qbankChart(qsorted);
+  const qrecent=[...qbank].sort((a,b)=>b.date<a.date?-1:1).slice(0,8);
+  const qrows=qrecent.length?qrecent.map(q=>`<div class="q-row"><span class="q-dot ${esc(q.track)}"></span><span class="q-src">${esc(q.source||"—")}</span><span class="q-meta mono">${q.correct}/${q.done} · ${q.pct}%</span><span class="q-date mono">${esc(shortDM(q.date))}</span><button class="x" data-qdel="${q.id}" aria-label="Delete">×</button></div>`).join(""):`<p class="hint">No question-bank sessions logged yet.</p>`;
+  const qbankHtml=`${chart?`<div class="card chartcard">${chart}</div>`:""}
+    ${qrows}
+    <div class="qadd">
+      <div class="qadd-grid">
+        <input type="date" id="qDate" value="${todayISO()}">
+        <select id="qTrack"><option value="frcophth">FRCOphth</option><option value="msra">MSRA</option><option value="other">Other</option></select>
+        <input id="qSrc" placeholder="source (EyeDocs, Rufai, Passmedicine…)" autocomplete="off">
+        <input id="qDone" type="number" min="0" placeholder="done" inputmode="numeric">
+        <input id="qCorrect" type="number" min="0" placeholder="correct" inputmode="numeric">
+      </div>
+      <div class="btnrow"><button class="btn" id="qAdd">Log session</button></div>
+    </div>`;
+
+  // ---- clinical sessions ----
+  const ssorted=[...sessions].sort((a,b)=>(a.date||"")<(b.date||"")?-1:1);
+  const signed=sessions.filter(s=>s.signedOff).length;
+  const dated=sessions.filter(s=>s.date).map(s=>s.date).sort();
+  let spanHtml="";
+  if(dated.length>=2){
+    const a=dated[0].split("-").map(Number), b=dated[dated.length-1].split("-").map(Number);
+    const days=Math.round((new Date(b[0],b[1]-1,b[2])-new Date(a[0],a[1]-1,a[2]))/864e5);
+    const months=(days/30.44).toFixed(1), met=days>91;
+    spanHtml=`<div class="span ${met?"ok":"warn"}">${met?"✓":"⚠"} Span ${esc(shortDM(dated[0]))} – ${esc(shortDM(dated[dated.length-1]))} · ${months} months ${met?"(meets the 3-month spread)":"(needs more than 3 months)"}</div>`;
+  } else if(sessions.length){ spanHtml=`<div class="span warn">⚠ Spread sessions over more than 3 months to meet the requirement.</div>`; }
+  const srows=ssorted.length?ssorted.map(s=>`<div class="s-row"><button class="s-check ${s.signedOff?"on":""}" data-sstoggle="${s.id}" aria-pressed="${s.signedOff?"true":"false"}" title="Supervisor sign-off">${s.signedOff?"✓":""}</button><div class="s-body"><div class="s-top mono">${s.date?esc(shortDM(s.date)):"no date"}${s.location?" · "+esc(s.location):""}</div><div class="s-sup">${s.supervisor?esc(s.supervisor):`<span class="hint">no supervisor</span>`}${s.note?" — "+esc(s.note):""}</div></div><button class="x" data-sdel="${s.id}" aria-label="Delete">×</button></div>`).join(""):`<p class="hint">No sessions logged. You need at least 10, signed off, spread over more than 3 months.</p>`;
+  const sessHtml=`<div class="bigstat"><span class="bs-n mono">${signed}<span class="bs-d">/10</span></span><span class="bs-k">signed off${sessions.length>signed?" · "+sessions.length+" logged":""}</span></div>
+    ${spanHtml}${srows}
+    <details class="addtask"><summary>＋ Log a session</summary>
+      <div class="sadd-grid">
+        <input type="date" id="sDate" value="${todayISO()}">
+        <input id="sLoc" placeholder="clinic / theatre" autocomplete="off">
+        <input id="sSup" placeholder="supervisor" autocomplete="off">
+      </div>
+      <input id="sNote" class="sadd-note" placeholder="note (optional)" autocomplete="off">
+      <label class="chk" style="margin:10px 0 0;display:flex"><input type="checkbox" id="sSigned"> already signed off</label>
+      <div class="btnrow"><button class="btn" id="sAdd">Add session</button></div>
+    </details>`;
+
+  // ---- milestones ----
+  const msorted=[...milestones].sort((a,b)=>{if(a.done!==b.done)return a.done?1:-1;return (a.date||"9999")<(b.date||"9999")?-1:1;});
+  const mrows=msorted.length?msorted.map(m=>{
+    const du=m.date?daysUntil(m.date):null;
+    const when=m.done?"":(m.date?(du<0?`<span class="m-over">overdue</span>`:`<span class="m-when mono">${du}d</span>`):"");
+    return `<div class="m-row ${m.done?"done":""}"><button class="m-check ${m.done?"on":""}" data-mtoggle="${m.id}" aria-pressed="${m.done?"true":"false"}">${m.done?"✓":""}</button><span class="m-title">${esc(m.title)}</span>${when}<button class="x" data-mdel="${m.id}" aria-label="Delete">×</button></div>`;
+  }).join(""):`<div class="empty"><h3>No milestones yet</h3><p>Track your portfolio deliverables and key dates.</p><button class="btn" id="msSeed">Add suggested milestones</button></div>`;
+  const mAdd=`<div class="addrow"><input id="mTitle" placeholder="Add a milestone…" autocomplete="off"><input type="date" id="mDate" style="flex:0 0 auto"><button class="btn" id="mAdd">Add</button></div>`;
+
+  // ---- anki ----
+  const doneDates=new Set(ankiLogs.filter(l=>l.done).map(l=>l.date));
+  const streak=await ankiStreak();
+  let dots="";
+  for(let i=13;i>=0;i--){const dd=new Date();dd.setDate(dd.getDate()-i);const iso=isoOf(dd);dots+=`<span class="a-dot ${doneDates.has(iso)?"on":""}" title="${esc(iso)}"></span>`;}
+  const ankiHtml=`<div class="bigstat"><span class="bs-n mono">${streak}</span><span class="bs-k">day streak · ${doneDates.size} days logged</span></div><div class="a-dots">${dots}</div><p class="hint">Last 14 days. Log today's review on the Today screen.</p>`;
+
+  el.innerHTML=`
+    <div class="shead"><h2>Coverage</h2><div class="rule"></div></div>
+    <p class="hint" style="margin:0 0 14px">Tap a topic to cycle: not started → shaky → okay → confident.</p>
+    ${covHtml}
+    <div class="shead"><h2>Question banks</h2><div class="rule"></div></div>
+    ${qbankHtml}
+    <div class="shead"><h2>Clinical sessions</h2><div class="rule"></div></div>
+    ${sessHtml}
+    <div class="shead"><h2>Milestones</h2><div class="rule"></div></div>
+    ${mrows}${mAdd}
+    <div class="shead"><h2>Anki</h2><div class="rule"></div></div>
+    ${ankiHtml}`;
+
+  // wire
+  el.querySelectorAll("[data-track][data-topic]").forEach(b=>b.onclick=()=>cycleCoverage(b.dataset.track,b.dataset.topic,el));
+  el.querySelectorAll("[data-covadd]").forEach(b=>b.onclick=()=>addTopic(b.dataset.covadd,el));
+  const qAdd=el.querySelector("#qAdd"); if(qAdd) qAdd.onclick=()=>addQbank(el);
+  el.querySelectorAll("[data-qdel]").forEach(b=>b.onclick=()=>dbDel("qbankLog",b.dataset.qdel).then(()=>renderProgress(el)));
+  const sAdd=el.querySelector("#sAdd"); if(sAdd) sAdd.onclick=()=>addSession(el);
+  el.querySelectorAll("[data-sstoggle]").forEach(b=>b.onclick=()=>toggleSession(b.dataset.sstoggle,el));
+  el.querySelectorAll("[data-sdel]").forEach(b=>b.onclick=()=>dbDel("sessions",b.dataset.sdel).then(()=>renderProgress(el)));
+  const mAddBtn=el.querySelector("#mAdd"); if(mAddBtn) mAddBtn.onclick=()=>addMilestone(el);
+  const msSeed=el.querySelector("#msSeed"); if(msSeed) msSeed.onclick=()=>addSuggestedMilestones(el);
+  el.querySelectorAll("[data-mtoggle]").forEach(b=>b.onclick=()=>toggleMilestone(b.dataset.mtoggle,el));
+  el.querySelectorAll("[data-mdel]").forEach(b=>b.onclick=()=>dbDel("milestones",b.dataset.mdel).then(()=>renderProgress(el)));
+}
+
+function qbankChart(entries){
+  if(!entries.length) return "";
+  const data=entries.slice(-24);
+  const W=320,H=132,padL=40,padR=8,padT=10,padB=22,n=data.length;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const x=i=> n===1? padL+plotW/2 : padL+plotW*i/(n-1);
+  const y=p=> padT+plotH*(1-p/100);
+  let grid="";
+  [0,50,100].forEach(g=>{const yy=y(g);grid+=`<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" class="qc-grid"/><text x="${padL-6}" y="${yy+3}" class="qc-axis" text-anchor="end">${g}</text>`;});
+  const cap=`<text class="qc-cap" x="11" y="${padT+plotH/2}" text-anchor="middle" transform="rotate(-90 11 ${padT+plotH/2})">% correct</text>`;
+  const pts=data.map((e,i)=>[x(i),y(e.pct)]);
+  const line=n>1?`<path d="${pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ")}" class="qc-line"/>`:"";
+  const dots=data.map((e,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(e.pct).toFixed(1)}" r="3.5" class="qc-dot ${esc(e.track)}"/>`).join("");
+  const lbl=`<text x="${padL}" y="${H-6}" class="qc-axis" text-anchor="start">${esc(shortDM(data[0].date))}</text>`+(n>1?`<text x="${W-padR}" y="${H-6}" class="qc-axis" text-anchor="end">${esc(shortDM(data[n-1].date))}</text>`:"");
+  return `<svg viewBox="0 0 ${W} ${H}" class="qc" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Question bank accuracy trend">${grid}${cap}${line}${dots}${lbl}</svg>`;
+}
+
+async function cycleCoverage(track,topic,el){
+  const key=track+":"+topic, cur=await dbGet("coverage",key);
+  await dbPut("coverage",{key,track,topic,rating:((cur?cur.rating:0)+1)%4});
+  renderProgress(el);
+}
+async function addTopic(track,el){
+  const inp=el.querySelector("#covAdd-"+track), t=inp.value.trim().toLowerCase(); if(!t) return;
+  const key=track+":"+t;
+  if(!(await dbGet("coverage",key))) await dbPut("coverage",{key,track,topic:t,rating:0});
+  renderProgress(el);
+}
+async function addQbank(el){
+  const date=el.querySelector("#qDate").value||todayISO();
+  const track=el.querySelector("#qTrack").value;
+  const source=el.querySelector("#qSrc").value.trim();
+  const done=parseInt(el.querySelector("#qDone").value,10)||0;
+  const correct=parseInt(el.querySelector("#qCorrect").value,10)||0;
+  if(done<=0){toast("Enter how many questions you did");return;}
+  await dbPut("qbankLog",{id:uid(),date,track,source,done,correct,pct:Math.round(correct/done*100)});
+  renderProgress(el); toast("Session logged");
+}
+async function addSession(el){
+  await dbPut("sessions",{id:uid(),
+    date:el.querySelector("#sDate").value||"",
+    location:el.querySelector("#sLoc").value.trim(),
+    supervisor:el.querySelector("#sSup").value.trim(),
+    note:el.querySelector("#sNote").value.trim(),
+    signedOff:el.querySelector("#sSigned").checked});
+  renderProgress(el); toast("Session logged");
+}
+async function toggleSession(id,el){const s=await dbGet("sessions",id);if(s){s.signedOff=!s.signedOff;await dbPut("sessions",s);renderProgress(el);}}
+async function addMilestone(el){
+  const title=el.querySelector("#mTitle").value.trim(); if(!title) return;
+  await dbPut("milestones",{id:uid(),title,date:el.querySelector("#mDate").value||null,done:false});
+  renderProgress(el);
+}
+async function toggleMilestone(id,el){const m=await dbGet("milestones",id);if(m){m.done=!m.done;await dbPut("milestones",m);renderProgress(el);}}
+async function addSuggestedMilestones(el){
+  const sug=[
+    {title:"PG Cert essay submitted",date:"2026-07-06"},
+    {title:"Research sent to reviewers",date:null},
+    {title:"Eye Sim course completed",date:null},
+    {title:"10 clinical sessions complete",date:null},
+    {title:"FRCOphth Part 1 sat",date:"2026-10-15"}
+  ];
+  for(const s of sug) await dbPut("milestones",{id:uid(),title:s.title,date:s.date,done:false});
+  renderProgress(el); toast("Suggested milestones added");
+}
+
+/* =========================================================================
+   JOURNAL  (slice 4)
+   Free-form entries (energy + day tag) + weekly review + task reflections
+   ========================================================================= */
+const JOURNAL_TAGS=["Day off","Normal","Long day","Nights"];
+
+function jStamp(ms){return new Date(ms).toLocaleString("en-GB",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});}
+
+async function renderJournal(el){
+  const [entries,planItems,days]=await Promise.all([dbAll("journal"),dbAll("plan"),dbAll("days")]);
+  const dayMap={}; days.forEach(d=>dayMap[d.date]=d);
+
+  const composer=`
+   <div class="shead"><h2>New entry</h2><div class="rule"></div><button class="jr-review" id="jReview">＋ Weekly review</button></div>
+   <div class="card jcomposer">
+     <div class="energy" id="jEnergy" data-energy="0">
+       <span class="elabel">Energy</span>
+       ${[1,2,3,4,5].map(n=>`<button class="edot" data-e="${n}" aria-label="Energy ${n}"></button>`).join("")}
+     </div>
+     <div class="jtags" id="jTags">
+       ${JOURNAL_TAGS.map(t=>`<button class="jtag" data-tag="${esc(t)}">${esc(t)}</button>`).join("")}
+     </div>
+     <textarea id="jText" class="jtext" placeholder="How did today go? What helped, what got in the way?"></textarea>
+     <div class="btnrow"><button class="btn" id="jSave">Save entry</button></div>
+   </div>`;
+
+  // merge free-form entries + task reflections into one timeline
+  const reflections=planItems.filter(i=>i.reflect&&i.reflect.trim()).map(i=>({
+    kind:"reflection",
+    at:i.completedAt?Date.parse(i.completedAt):Date.parse(i.scheduledDate+"T12:00:00"),
+    date:i.completedAt?i.completedAt.slice(0,10):i.scheduledDate,
+    item:i
+  }));
+  const ent=entries.map(e=>({...e,kind:e.kind||"entry"}));
+  const timeline=[...ent,...reflections].sort((a,b)=>b.at-a.at);
+  const rows=timeline.length
+    ? timeline.map(t=>t.kind==="reflection"?reflectionCard(t):journalCard(t,dayMap)).join("")
+    : `<div class="empty"><h3>Nothing here yet</h3><p>Write how a day went, or reflect on a task from Today — task reflections show up here automatically.</p></div>`;
+
+  el.innerHTML=composer+`<div class="shead"><h2>Timeline</h2><div class="rule"></div><span class="count">${timeline.length}</span></div>`+rows;
+
+  wireJournalComposer(el);
+  el.querySelectorAll("[data-jdel]").forEach(b=>b.onclick=()=>dbDel("journal",b.dataset.jdel).then(()=>renderJournal(el)));
+}
+
+function journalCard(e,dayMap){
+  const dm=dayMap[e.date];
+  const ctx=dm&&(dm.label||dm.loadLevel)?`<span class="j-ctx">${esc(dm.label||dm.loadLevel)}</span>`:"";
+  const energy=e.energy?`<span class="j-energy">${[1,2,3,4,5].map(n=>`<span class="edot sm ${n<=e.energy?"on":""}"></span>`).join("")}</span>`:"";
+  const tag=e.tag?`<span class="jtag-chip">${esc(e.tag)}</span>`:"";
+  const badge=e.kind==="review"?`<span class="j-review-badge">weekly review</span>`:"";
+  const meta=(energy||tag)?`<div class="j-meta">${energy}${tag}</div>`:"";
+  return `<article class="j-card ${e.kind==="review"?"is-review":""}">
+    <div class="j-head"><span class="j-when mono">${esc(jStamp(e.at))}</span>${badge}${ctx}<button class="x" data-jdel="${e.id}" aria-label="Delete">×</button></div>
+    ${meta}<div class="j-text">${esc(e.text).replace(/\n/g,"<br>")}</div></article>`;
+}
+
+function reflectionCard(t){
+  const i=t.item;
+  return `<article class="j-card is-reflection">
+    <div class="j-head"><span class="j-when mono">${esc(jStamp(t.at))}</span><span class="j-from">from a task</span></div>
+    <div class="j-task"><span class="chip ${esc(i.track)}">${esc(i.track)}</span> ${esc(i.title)}</div>
+    <div class="j-text">${esc(i.reflect).replace(/\n/g,"<br>")}</div></article>`;
+}
+
+function wireJournalComposer(el){
+  const wrap=el.querySelector("#jEnergy");
+  el.querySelectorAll("#jEnergy .edot").forEach(b=>b.onclick=()=>{
+    const n=Number(b.dataset.e), cur=Number(wrap.dataset.energy||0);
+    const val=cur===n?n-1:n;           // tap the current top dot to step back down
+    wrap.dataset.energy=val;
+    el.querySelectorAll("#jEnergy .edot").forEach(d=>d.classList.toggle("on",Number(d.dataset.e)<=val));
+  });
+  el.querySelectorAll("#jTags .jtag").forEach(b=>b.onclick=()=>{
+    const on=b.classList.contains("on");
+    el.querySelectorAll("#jTags .jtag").forEach(d=>d.classList.remove("on"));
+    if(!on) b.classList.add("on");
+  });
+  const rev=el.querySelector("#jReview");
+  if(rev) rev.onclick=()=>{
+    const ta=el.querySelector("#jText");
+    ta.value="Weekly review\n\n• What went well:\n• What slipped, and why:\n• When could I actually study (energy / shift pattern):\n• One change for next week:\n";
+    ta.dataset.review="1"; ta.focus();
+  };
+  const save=el.querySelector("#jSave"); if(save) save.onclick=()=>saveJournal(el);
+  const ta=el.querySelector("#jText"); if(ta) ta.addEventListener("input",()=>{if(ta.dataset.review==="1"&&!ta.value.startsWith("Weekly review")) ta.dataset.review="";});
+}
+
+async function saveJournal(el){
+  const ta=el.querySelector("#jText"), text=ta.value.trim();
+  if(!text){toast("Write something first");return;}
+  const energy=Number(el.querySelector("#jEnergy").dataset.energy||0)||null;
+  const tagBtn=el.querySelector("#jTags .jtag.on"), tag=tagBtn?tagBtn.dataset.tag:null;
+  const kind=ta.dataset.review==="1"?"review":"entry";
+  await dbPut("journal",{id:uid(),at:Date.now(),date:todayISO(),energy,tag,text,kind});
+  renderJournal(el); toast("Saved");
+}
+
+/* =========================================================================
+   SYNC  (slice 5) — Google Drive appData (non-sensitive scope), whole-snapshot
+   last-write-wins with a conflict guard. All network code is best-effort and
+   wrapped so the app works fully without it.
+   ========================================================================= */
+const SYNC_FILE="theatre.json";
+const DATA_STORES=Object.keys(STORES).filter(s=>s!=="meta"); // meta holds sync state — never synced
+let syncCfg=null, suspendDirty=false, pushTimer=null;
+let gToken=null, gTokenExp=0, tokenClient=null, tokenResolve=null, tokenReject=null;
+
+function defaultSyncCfg(){return {clientId:"",connected:false,fileId:null,deviceId:uid(),lastSyncAt:0,dirtySince:0,auto:true};}
+async function loadSyncCfg(){const r=await dbGet("meta","sync");syncCfg=r&&r.value?r.value:defaultSyncCfg();return syncCfg;}
+async function saveSyncCfg(){await dbPut("meta",{key:"sync",value:syncCfg});}
+
+function markDirty(store){
+  if(store==="meta"||suspendDirty||!syncCfg) return;
+  syncCfg.dirtySince=Date.now();
+  dbPut("meta",{key:"sync",value:syncCfg});           // persist (excluded from dirtying)
+  if(syncCfg.connected&&syncCfg.auto) scheduleAutoPush();
+  updateSyncBadge();
+}
+function scheduleAutoPush(){clearTimeout(pushTimer);pushTimer=setTimeout(()=>{pushSync().then(updateSyncBadge).catch(e=>console.warn("auto-push",e));},4000);}
+
+/* ---- Google token ---- */
+function gisReady(){return typeof google!=="undefined"&&google.accounts&&google.accounts.oauth2;}
+function initTokenClient(){
+  tokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:syncCfg.clientId,
+    scope:"https://www.googleapis.com/auth/drive.appdata",
+    callback:resp=>{
+      if(resp&&resp.access_token){gToken=resp.access_token;gTokenExp=Date.now()+((resp.expires_in||3600)*1000);if(tokenResolve)tokenResolve(gToken);}
+      else if(tokenReject) tokenReject(new Error(resp&&resp.error||"token error"));
+      tokenResolve=tokenReject=null;
+    },
+    error_callback:err=>{if(tokenReject)tokenReject(new Error(err&&err.type||"sign-in cancelled"));tokenResolve=tokenReject=null;}
+  });
+}
+function getToken(interactive){
+  return new Promise((res,rej)=>{
+    if(!gisReady()) return rej(new Error("Google library not loaded — need to be online."));
+    if(!syncCfg.clientId) return rej(new Error("No Google client ID set."));
+    if(gToken&&Date.now()<gTokenExp-60000) return res(gToken);
+    if(!tokenClient) initTokenClient();
+    tokenResolve=res;tokenReject=rej;
+    try{tokenClient.requestAccessToken({prompt:interactive?"consent":""});}
+    catch(e){tokenResolve=tokenReject=null;rej(e);}
+  });
+}
+
+/* ---- Drive REST (appDataFolder) ---- */
+async function driveFind(token){
+  const q=encodeURIComponent("name='"+SYNC_FILE+"'");
+  const r=await fetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q="+q+"&fields=files(id,modifiedTime)",{headers:{Authorization:"Bearer "+token}});
+  if(!r.ok) throw new Error("Drive list failed ("+r.status+")");
+  const j=await r.json(); return (j.files&&j.files[0])||null;
+}
+async function driveDownload(token,id){
+  const r=await fetch("https://www.googleapis.com/drive/v3/files/"+id+"?alt=media",{headers:{Authorization:"Bearer "+token}});
+  if(!r.ok) throw new Error("Drive download failed ("+r.status+")");
+  return r.json();
+}
+async function driveUpload(token,id,obj){
+  const body=JSON.stringify(obj);
+  if(id){
+    const r=await fetch("https://www.googleapis.com/upload/drive/v3/files/"+id+"?uploadType=media",{method:"PATCH",headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},body});
+    if(!r.ok) throw new Error("Drive update failed ("+r.status+")"); return id;
+  }
+  const boundary="theatre"+Date.now();
+  const meta={name:SYNC_FILE,parents:["appDataFolder"]};
+  const multipart="--"+boundary+"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+JSON.stringify(meta)+"\r\n--"+boundary+"\r\nContent-Type: application/json\r\n\r\n"+body+"\r\n--"+boundary+"--";
+  const r=await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id",{method:"POST",headers:{Authorization:"Bearer "+token,"Content-Type":"multipart/related; boundary="+boundary},body:multipart});
+  if(!r.ok) throw new Error("Drive create failed ("+r.status+")"); const j=await r.json(); return j.id;
+}
+
+/* ---- snapshot ---- */
+async function buildSnapshot(){
+  const snap={_app:"theatre",_schema:SCHEMA_VERSION,syncedAt:Date.now(),deviceId:syncCfg.deviceId};
+  for(const s of DATA_STORES) snap[s]=await dbAll(s);
+  return snap;
+}
+async function applySnapshot(snap){
+  suspendDirty=true;
+  try{ for(const s of DATA_STORES){ if(!Array.isArray(snap[s])) continue; await dbClear(s); for(const rec of snap[s]) await dbPut(s,rec); } }
+  finally{ suspendDirty=false; }
+}
+
+/* ---- high-level ops ---- */
+async function pushSync(){
+  const token=await getToken(false);
+  if(!syncCfg.fileId){const f=await driveFind(token);if(f)syncCfg.fileId=f.id;}
+  const snap=await buildSnapshot();
+  syncCfg.fileId=await driveUpload(token,syncCfg.fileId,snap);
+  syncCfg.lastSyncAt=snap.syncedAt; syncCfg.dirtySince=0; await saveSyncCfg();
+  return snap.syncedAt;
+}
+// Reconcile remote and local. Returns a status string, or {conflict, remote}.
+async function syncNow(interactive){
+  await getToken(interactive);
+  const token=await getToken(false);
+  const f=await driveFind(token);
+  if(!f){ await pushSync(); return "Cloud backup created."; }
+  syncCfg.fileId=f.id;
+  const remote=await driveDownload(token,f.id);
+  const localDirty=syncCfg.dirtySince>syncCfg.lastSyncAt;
+  const remoteNewer=(remote.syncedAt||0)>syncCfg.lastSyncAt;
+  if(remoteNewer&&localDirty) return {conflict:true,remote};
+  if(remoteNewer){ await applySnapshot(remote); syncCfg.lastSyncAt=remote.syncedAt; syncCfg.dirtySince=0; await saveSyncCfg(); return "Pulled the latest from Drive."; }
+  if(localDirty){ await pushSync(); return "Pushed your changes to Drive."; }
+  syncCfg.lastSyncAt=Math.max(syncCfg.lastSyncAt,remote.syncedAt||0); await saveSyncCfg(); return "Already up to date.";
+}
+async function resolveConflict(keep,remote){
+  if(keep==="cloud"){ await applySnapshot(remote); syncCfg.lastSyncAt=remote.syncedAt; syncCfg.dirtySince=0; await saveSyncCfg(); }
+  else { await pushSync(); }                       // keep this device → overwrite cloud
+}
+
+function syncBadgeText(){
+  if(!syncCfg||!syncCfg.connected) return "local only";
+  if(syncCfg.dirtySince>syncCfg.lastSyncAt) return "unsynced changes";
+  if(syncCfg.lastSyncAt) return "synced "+new Date(syncCfg.lastSyncAt).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
+  return "connected";
+}
+function updateSyncBadge(){const el=document.getElementById("syncState");if(el)el.textContent=syncBadgeText();}
+
+/* =========================================================================
+   STUBS (built in later slices)
+   ========================================================================= */
+async function stub(el){
+  const v=currentView();
+  const map={library:["▤","Study library","Your interactive chapters, indexed by track and topic — slice 6."]};
+  const [ic,h,p]=map[v]||["·","Soon",""];
+  el.innerHTML=`<div class="stub"><div class="big">${ic}</div><h3>${esc(h)}</h3><p>${esc(p)}</p></div>`;
+}
+
+/* =========================================================================
+   Seed + boot
+   ========================================================================= */
+async function seed(){
+  const ex=await getSetting("exams",null);
+  if(!ex){
+    // editable placeholders until a plan or you set the real dates
+    await setSetting("exams",{frcophth_part1:"2026-10-15",msra:"2027-01-10"});
+  }
+  await dbPut("meta",{key:"schemaVersion",value:SCHEMA_VERSION});
+}
+(async function boot(){
+  try{ await openDB(); await loadSyncCfg(); await seed(); await route(); updateSyncBadge(); }
+  catch(e){ document.getElementById("view").innerHTML=`<div class="empty"><h3>Storage unavailable</h3><p>This browser blocked local storage. Open the deployed site (not a private window) to use Theatre.</p></div>`; console.error(e); return; }
+
+  // Register the service worker (offline + installable). Harmless if unsupported.
+  if("serviceWorker" in navigator){
+    window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(e=>console.warn("SW registration failed",e)));
+  }
+
+  // Best-effort sync on open: wait briefly for the Google library, then reconcile silently.
+  if(syncCfg.connected&&syncCfg.auto){
+    setTimeout(async()=>{
+      if(!gisReady()) return;                 // offline or library blocked — skip quietly
+      try{
+        const r=await syncNow(false);
+        if(r&&r.conflict){ pendingConflict=r.remote; toast("Sync conflict — resolve it in Settings"); }
+        else { updateSyncBadge(); if(currentView()!=="settings") route(); }
+      }catch(e){ console.warn("open sync",e); }
+    },1800);
+  }
+})();
+</script>
+</body>
+</html>
