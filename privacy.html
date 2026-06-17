@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0c1414">
+<title>Theatre — privacy policy</title>
+<style>
+:root{
+  --bg:#0c1414;--surface:#14201f;--line:#243634;--line-soft:#1a2826;
+  --text:#e9f0ee;--dim:#8fa6a3;--faint:#5d736f;--accent:#f2a93b;--go:#57c79a;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:680px;margin:0 auto;padding:28px 22px 70px}
+a{color:var(--accent)}
+header{display:flex;align-items:center;gap:10px;margin-bottom:34px}
+header b{font-size:17px}
+h1{font-size:26px;letter-spacing:-.01em;margin:0 0 4px}
+.updated{color:var(--faint);font-size:13px;font-family:var(--mono);margin-bottom:26px}
+h2{font-size:16px;margin:30px 0 8px;letter-spacing:.01em}
+p,li{font-size:15px;color:var(--text)}
+p{margin:0 0 12px}
+ul{margin:0 0 12px;padding-left:20px}
+li{margin-bottom:6px}
+.tldr{border:1px solid var(--accent);background:rgba(242,169,59,.10);border-radius:12px;padding:16px 18px;margin-bottom:8px}
+.tldr p{margin:0;color:#f1d8a8;font-size:14.5px}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:13px;background:var(--surface);border:1px solid var(--line-soft);border-radius:5px;padding:1px 6px}
+.disclaimer{margin-top:30px;border-top:1px solid var(--line-soft);padding-top:16px;color:var(--faint);font-size:13px}
+footer{margin-top:30px;font-size:13px;color:var(--faint)}
+footer a{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true"><circle cx="24" cy="24" r="16" fill="none" stroke="#f2a93b" stroke-width="3.2"/><circle cx="24" cy="24" r="4.6" fill="#f2a93b"/></svg>
+    <b>Theatre</b>
+  </header>
+
+  <h1>Privacy policy</h1>
+  <div class="updated">Last updated: 17 June 2026</div>
+
+  <div class="tldr">
+    <p>Theatre is a personal study tool with no server and no accounts. Everything you enter stays on your device. If you connect Google Drive, a copy is saved only to a private application-data folder in your own Drive. Nothing is sent to the developer, and nothing is sold, shared, or used for advertising.</p>
+  </div>
+
+  <h2>Who this covers</h2>
+  <p>This policy describes how the Theatre web app ("the app") handles information. The app is provided as a personal, non-commercial tool and is operated by its individual developer ("we", "us"). If you have questions, contact us at the address at the end.</p>
+
+  <h2>What the app stores</h2>
+  <p>The app only holds information you enter into it yourself. That can include your study schedule and tasks, day load levels and labels, calendar events and deadlines, journal entries with energy ratings, syllabus-coverage ratings, question-bank results, records of clinical sessions (which may include a supervisor's name that you type in), portfolio milestones, quick-capture notes, spaced-repetition completion logs, and exam dates. The app does not ask for or collect anything beyond what you type.</p>
+
+  <h2>Where it is stored</h2>
+  <ul>
+    <li><b>On your device.</b> By default everything is saved locally in your browser's storage (IndexedDB). It does not leave your device.</li>
+    <li><b>In your own Google Drive (optional).</b> If you choose to connect Google Drive, the app saves a single backup file of your data to Drive's hidden <em>application-data folder</em> (<code>appDataFolder</code>) so it can sync between your devices. This folder is private to the app within your own Google account.</li>
+  </ul>
+
+  <h2>Google account access</h2>
+  <p>When you connect Drive, the app requests one Google permission only:</p>
+  <ul>
+    <li><code>https://www.googleapis.com/auth/drive.appdata</code> — read and write the app's own hidden configuration/data folder.</li>
+  </ul>
+  <p>This scope cannot see, read, or change any of your other files, documents, photos, or email. The app has no access to the rest of your Google account. Sign-in is handled by Google Identity Services; the app receives a temporary access token to read and write its own data file and stores no Google profile information. We do not receive your Google password.</p>
+
+  <h2>What we do not do</h2>
+  <ul>
+    <li>We have no server that receives your data; the app is a static website and your information is processed entirely in your browser and your own Drive.</li>
+    <li>We do not sell, rent, or share your information with anyone.</li>
+    <li>We do not use advertising, analytics, tracking pixels, or tracking cookies.</li>
+    <li>We do not use your data to train models or build profiles.</li>
+  </ul>
+
+  <h2>Google Limited Use</h2>
+  <p>Theatre's use and transfer of information received from Google APIs to any other app will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener" target="_blank">Google API Services User Data Policy</a>, including the Limited Use requirements. Data obtained through the <code>drive.appdata</code> scope is used solely to provide the app's sync feature and is never transferred to others except as required to provide that feature, comply with the law, or as part of a sale you have been notified of.</p>
+
+  <h2>Hosting</h2>
+  <p>The app's files are served by a third-party static-hosting provider, which may keep standard server logs (such as IP addresses and requested files) for security and operations under its own privacy policy. These logs are about page requests only and do not include the contents of your study data, which never travel to the host.</p>
+
+  <h2>Keeping and deleting your data</h2>
+  <p>Your data stays until you remove it. You can erase everything held on a device from <b>Settings → Erase everything</b> in the app, or by clearing the site's browser storage. If you connected Drive, you can delete the synced copy by removing the app's data through your Google account's app and data controls, or by revoking the app's access at <a href="https://myaccount.google.com/permissions" rel="noopener" target="_blank">your Google account permissions</a>. Uninstalling or clearing the browser removes the local copy.</p>
+
+  <h2>Children</h2>
+  <p>The app is intended for use by clinicians and is not directed at children.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy changes, the date above will be updated. Material changes will be reflected on this page.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy or your data: <a href="mailto:[your-email@example.com]">[your-email@example.com]</a></p>
+
+  <div class="disclaimer">This template describes how the app actually works and is provided to support its setup. It is not legal advice — review it for accuracy against your own deployment and circumstances before relying on it.</div>
+
+  <footer><a href="home.html">← Back to home</a> · <a href="index.html">Open the app</a></footer>
+</div>
+</body>
+</html>

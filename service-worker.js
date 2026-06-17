@@ -1,6 +1,6 @@
 /* Theatre service worker — offline-first shell.
    Bump CACHE when you change the app so clients pick up the new version. */
-const CACHE = "theatre-v1";
+const CACHE = "theatre-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -35,8 +35,8 @@ self.addEventListener("fetch", e => {
   if (req.mode === "navigate") {
     e.respondWith(
       fetch(req)
-        .then(resp => { const copy = resp.clone(); caches.open(CACHE).then(c => c.put("./index.html", copy)); return resp; })
-        .catch(() => caches.match("./index.html"))
+        .then(resp => { const copy = resp.clone(); caches.open(CACHE).then(c => c.put(req, copy)); return resp; })
+        .catch(() => caches.match(req).then(r => r || caches.match("./index.html")))
     );
     return;
   }
