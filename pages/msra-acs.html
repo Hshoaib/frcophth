@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c1414">
+<title>Acute coronary syndromes — Theatre</title>
+<style>
+:root{--bg:#0c1414;--surface:#14201f;--line:#243634;--line-soft:#1a2826;--text:#e9f0ee;--dim:#8fa6a3;--faint:#5d736f;--accent:#f2a93b;--go:#57c79a;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto;padding:18px 20px 60px}
+a.back{color:var(--dim);text-decoration:none;font-size:13px;font-weight:600}
+a.back:hover{color:var(--text)}
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--go);font-weight:600;margin:26px 0 6px}
+h1{font-size:25px;letter-spacing:-.01em;margin:0 0 14px}
+p{margin:0 0 14px}
+.cards{display:grid;gap:10px;margin:16px 0}
+.c{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:14px 16px}
+.c h3{margin:0 0 4px;font-size:15px}
+.c p{margin:0;font-size:13.5px;color:var(--dim)}
+.c .ecg{font-family:var(--mono);font-size:12px;color:var(--accent);margin-top:6px}
+details{border:1px solid var(--line-soft);border-radius:10px;background:var(--surface);padding:4px 16px;margin:8px 0}
+summary{cursor:pointer;font-weight:600;padding:10px 0;color:var(--go)}
+.key{border-left:3px solid var(--go);padding:4px 0 4px 14px;margin:12px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html#/library">← Library</a>
+
+  <div class="eyebrow">MSRA · Cardiology</div>
+  <h1>Acute coronary syndromes</h1>
+
+  <p>ACS is a spectrum from unstable angina through to full-thickness infarction, separated by the ECG and troponin.</p>
+
+  <div class="cards">
+    <div class="c"><h3>STEMI</h3><p>Ischaemic chest pain with persistent ST elevation or new LBBB; troponin rises.</p><div class="ecg">ST elevation</div></div>
+    <div class="c"><h3>NSTEMI</h3><p>Ischaemic pain, raised troponin, but no persistent ST elevation (may show ST depression / T-wave changes).</p><div class="ecg">↑ troponin, no ST elevation</div></div>
+    <div class="c"><h3>Unstable angina</h3><p>Ischaemic pain at rest or crescendo, normal troponin and no ST elevation.</p><div class="ecg">normal troponin</div></div>
+  </div>
+
+  <details>
+    <summary>First-line management</summary>
+    <div class="key">Initial: aspirin 300 mg, and treat hypoxia/pain as needed. STEMI → immediate reperfusion: primary PCI if available within the target window, otherwise fibrinolysis. NSTEMI/UA → risk-stratify (e.g. GRACE) to time angiography and antiplatelet/anticoagulant therapy. This is a revision summary — always follow current local guidelines.</div>
+  </details>
+</div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c1414">
+<title>Vergence — Theatre</title>
+<style>
+:root{--bg:#0c1414;--surface:#14201f;--line:#243634;--line-soft:#1a2826;--text:#e9f0ee;--dim:#8fa6a3;--faint:#5d736f;--accent:#f2a93b;--go:#57c79a;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto;padding:18px 20px 60px}
+a.back{color:var(--dim);text-decoration:none;font-size:13px;font-weight:600}
+a.back:hover{color:var(--text)}
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:26px 0 6px}
+h1{font-size:25px;letter-spacing:-.01em;margin:0 0 14px}
+p{margin:0 0 14px}
+.eq{font-family:var(--mono);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:17px;text-align:center;margin:6px 0 18px}
+.calc{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:18px;margin:18px 0}
+.calc label{display:block;font-size:13px;color:var(--dim);margin-bottom:8px}
+.calc input[type=range]{width:100%;accent-color:var(--accent)}
+.calc .readout{display:flex;align-items:baseline;justify-content:space-between;margin-top:14px}
+.calc .d{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--accent)}
+.calc .dist{font-family:var(--mono);color:var(--dim)}
+.sign{font-size:13.5px;color:var(--dim);margin-top:10px}
+details{border:1px solid var(--line-soft);border-radius:10px;background:var(--surface);padding:4px 16px;margin:14px 0}
+summary{cursor:pointer;font-weight:600;padding:10px 0;color:var(--accent)}
+.key{border-left:3px solid var(--go);padding:4px 0 4px 14px;color:var(--text);margin:14px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../index.html#/library">← Library</a>
+
+  <div class="eyebrow">FRCOphth · Optics</div>
+  <h1>Vergence</h1>
+
+  <p>Vergence describes how strongly a bundle of light rays is converging or diverging at a given plane. It's measured in <b>dioptres (D)</b>, and it's simply the reciprocal of the distance to the point the rays are heading toward (or coming from), measured in metres.</p>
+
+  <div class="eq">L = n / l</div>
+
+  <p>where <b>L</b> is the vergence in dioptres, <b>n</b> is the refractive index of the medium (1.00 in air), and <b>l</b> is the distance in metres. Converging light has <b>positive</b> vergence; diverging light has <b>negative</b> vergence.</p>
+
+  <div class="calc">
+    <label for="r">Distance to the point of focus (in air)</label>
+    <input id="r" type="range" min="10" max="200" value="50">
+    <div class="readout"><span class="dist" id="dist">0.50 m</span><span class="d" id="d">+2.00 D</span></div>
+    <div class="sign" id="note">Light converging to a point 0.50 m away has a vergence of +2.00 D.</div>
+  </div>
+
+  <p>Build the instinct for the exam: 1 m → 1 D, 0.5 m → 2 D, 0.25 m → 4 D, 0.1 m → 10 D. Halving the distance doubles the vergence.</p>
+
+  <details>
+    <summary>Quick check</summary>
+    <p>A lens forms an image 25 cm behind it. What is the vergence of light leaving the lens at that image?</p>
+    <div class="key">l = 0.25 m, so L = 1 / 0.25 = <b>+4.00 D</b> (converging toward a real image).</div>
+  </details>
+</div>
+<script>
+(function(){
+  var r=document.getElementById("r"),d=document.getElementById("d"),dist=document.getElementById("dist"),note=document.getElementById("note");
+  function upd(){
+    var cm=+r.value, m=cm/100, L=1/m;
+    dist.textContent=m.toFixed(2)+" m";
+    d.textContent=(L>=0?"+":"")+L.toFixed(2)+" D";
+    note.textContent="Light converging to a point "+m.toFixed(2)+" m away has a vergence of "+(L>=0?"+":"")+L.toFixed(2)+" D.";
+  }
+  r.addEventListener("input",upd); upd();
+})();
+</script>
+</body>
+</html>
