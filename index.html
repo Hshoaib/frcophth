@@ -760,12 +760,17 @@ function renderSyncCard(){
       </div></div>`;
   }
   if(!connected){
-    html+=`<div class="field"><label for="gClient">Google OAuth client ID</label>
-      <input id="gClient" value="${esc(syncCfg.clientId||"")}" placeholder="xxxxx.apps.googleusercontent.com" autocomplete="off"></div>
-      <div class="btnrow"><button class="btn" id="gConnect">Connect Drive</button></div>
-      <details class="addtask" style="margin-top:12px"><summary>How to get a client ID</summary>
-        <p class="hint" style="margin:6px 0">In Google Cloud Console: create a project → enable the <b>Google Drive API</b> → OAuth consent screen (External, add yourself as a test user) → Credentials → create an <b>OAuth client ID</b> of type <b>Web application</b> → add your GitHub Pages URL (e.g. <span class="mono">https://you.github.io</span>) under <b>Authorised JavaScript origins</b> → paste the client ID here. No verification needed while you're the only user.</p>
-      </details>`;
+    if(GOOGLE_CLIENT_ID){
+      html+=`<p class="hint" style="margin-bottom:10px">Client ID is built in — just connect your Google account.</p>
+        <div class="btnrow"><button class="btn" id="gConnect">Connect Drive</button></div>`;
+    } else {
+      html+=`<div class="field"><label for="gClient">Google OAuth client ID</label>
+        <input id="gClient" value="${esc(syncCfg.clientId||"")}" placeholder="xxxxx.apps.googleusercontent.com" autocomplete="off"></div>
+        <div class="btnrow"><button class="btn" id="gConnect">Connect Drive</button></div>
+        <details class="addtask" style="margin-top:12px"><summary>How to get a client ID</summary>
+          <p class="hint" style="margin:6px 0">In Google Cloud Console: create a project → enable the <b>Google Drive API</b> → OAuth consent screen (External, add yourself as a test user) → Credentials → create an <b>OAuth client ID</b> of type <b>Web application</b> → add your GitHub Pages URL (e.g. <span class="mono">https://you.github.io</span>) under <b>Authorised JavaScript origins</b> → paste the client ID here. No verification needed while you're the only user.</p>
+        </details>`;
+    }
   } else {
     html+=`<div class="syncstat"><span class="syncdot ${syncCfg.dirtySince>syncCfg.lastSyncAt?"warn":"ok"}"></span>${esc(syncBadgeText())}</div>
       <label class="chk" style="margin:10px 0;display:flex"><input type="checkbox" id="gAuto" ${syncCfg.auto?"checked":""}> auto-sync after changes</label>
@@ -779,8 +784,11 @@ function renderSyncCard(){
   const cId=card.querySelector("#gClient");
   const conn=card.querySelector("#gConnect");
   if(conn) conn.onclick=async()=>{
-    const id=cId.value.trim(); if(!id){toast("Paste your client ID first");return;}
-    syncCfg.clientId=id; tokenClient=null; gToken=null; await saveSyncCfg();
+    if(!GOOGLE_CLIENT_ID){
+      const id=cId?cId.value.trim():""; if(!id){toast("Paste your client ID first");return;}
+      syncCfg.clientId=id;
+    }
+    tokenClient=null; gToken=null; await saveSyncCfg();
     conn.disabled=true; conn.textContent="Connecting…";
     try{
       const r=await syncNow(true);
@@ -1284,6 +1292,13 @@ async function saveJournal(el){
    wrapped so the app works fully without it.
    ========================================================================= */
 const SYNC_FILE="theatre.json";
+
+/* ▼▼▼  PASTE YOUR GOOGLE OAUTH CLIENT ID BETWEEN THE QUOTES TO BAKE IT IN  ▼▼▼
+   Leave it as "" to instead type the ID into Settings → Sync on each device. */
+const GOOGLE_CLIENT_ID="";
+/* ▲▲▲  ------------------------------------------------------------------  ▲▲▲ */
+function clientId(){return GOOGLE_CLIENT_ID||(syncCfg&&syncCfg.clientId)||"";}
+
 const DATA_STORES=Object.keys(STORES).filter(s=>s!=="meta"); // meta holds sync state — never synced
 let syncCfg=null, suspendDirty=false, pushTimer=null;
 let gToken=null, gTokenExp=0, tokenClient=null, tokenResolve=null, tokenReject=null;
@@ -1305,7 +1320,7 @@ function scheduleAutoPush(){clearTimeout(pushTimer);pushTimer=setTimeout(()=>{pu
 function gisReady(){return typeof google!=="undefined"&&google.accounts&&google.accounts.oauth2;}
 function initTokenClient(){
   tokenClient=google.accounts.oauth2.initTokenClient({
-    client_id:syncCfg.clientId,
+    client_id:clientId(),
     scope:"https://www.googleapis.com/auth/drive.appdata",
     callback:resp=>{
       if(resp&&resp.access_token){gToken=resp.access_token;gTokenExp=Date.now()+((resp.expires_in||3600)*1000);if(tokenResolve)tokenResolve(gToken);}
@@ -1318,7 +1333,7 @@ function initTokenClient(){
 function getToken(interactive){
   return new Promise((res,rej)=>{
     if(!gisReady()) return rej(new Error("Google library not loaded — need to be online."));
-    if(!syncCfg.clientId) return rej(new Error("No Google client ID set."));
+    if(!clientId()) return rej(new Error("No Google client ID set."));
     if(gToken&&Date.now()<gTokenExp-60000) return res(gToken);
     if(!tokenClient) initTokenClient();
     tokenResolve=res;tokenReject=rej;
