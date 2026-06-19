@@ -1,6 +1,6 @@
 /* Theatre service worker — offline-first shell.
    Bump CACHE when you change the app so clients pick up the new version. */
-const CACHE = "theatre-v4";
+const CACHE = "theatre-v5";
 const ASSETS = [
   "./",
   "./index.html",

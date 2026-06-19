@@ -356,6 +356,14 @@ main{flex:1;padding:4px 18px 100px}
 .md-preview blockquote{border-left:3px solid var(--line);margin:10px 0;padding:2px 0 2px 14px;color:var(--dim)}
 .md-preview code{font-family:var(--mono);font-size:13px;background:var(--surface);border:1px solid var(--line-soft);border-radius:5px;padding:1px 5px}
 .md-preview a{color:var(--accent)}
+.cap-row{display:flex;align-items:center;gap:10px;border:1px solid var(--line-soft);background:var(--bg-2);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:7px}
+.cap-text{flex:1;font-size:14px;min-width:0}
+.cap-tonote{background:none;border:1px solid var(--line);color:var(--accent);border-radius:8px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.cap-tonote:hover{border-color:var(--accent-line)}
+.cap-row .x{background:none;border:none;color:var(--faint);font-size:18px;line-height:1;cursor:pointer}
+.cap-row .x:hover{color:var(--danger)}
+.n-view-title{font-size:24px;letter-spacing:-.01em;margin:6px 0 10px}
+.md-preview.note-read{border:none;background:none;padding:0;font-size:15.5px}
 .syncstat{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--text);margin:4px 0}
 .syncdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .syncdot.ok{background:var(--go)} .syncdot.warn{background:var(--ease)}
@@ -1578,7 +1586,8 @@ async function cycleLibConfidence(id,track,topic,el){
 /* =========================================================================
    NOTES  (markdown stored; toolbar inserts syntax; live preview; Drive-synced)
    ========================================================================= */
-let noteOpen=null, noteQuery="", noteTrack="all", noteFocusSearch=false;
+let noteOpen=null, noteMode="view", noteQuery="", noteTrack="all", noteFocusSearch=false;
+let notePrefill="", noteFromCapture=null;
 const ALL_TOPICS=[...FRCOPHTH_TOPICS,...MSRA_TOPICS];
 
 /* ---- tiny self-contained markdown -> HTML (only what the toolbar offers) ---- */
@@ -1635,9 +1644,14 @@ function mdLinkBtn(ta){
 }
 
 async function renderNotes(el){
-  if(noteOpen!==null){ return renderNoteEditor(el); }
+  if(noteOpen!==null){
+    if(noteOpen!=="new" && noteMode==="view") return renderNoteView(el);
+    return renderNoteEditor(el);
+  }
 
-  const notes=(await dbAll("notes")).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  const [notes,captures]=await Promise.all([dbAll("notes"),dbAll("inbox")]);
+  notes.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  captures.sort((a,b)=>b.at-a.at);
   const q=noteQuery.trim().toLowerCase();
   const filtered=notes.filter(n=>{
     if(noteTrack!=="all" && (n.track||"other")!==noteTrack) return false;
@@ -1653,13 +1667,21 @@ async function renderNotes(el){
       </div>
     </div>`;
 
+  // Quick-capture inbox (full list, shown when not searching)
+  let captureSection="";
+  if(!q && captures.length){
+    captureSection=`<div class="shead"><h2>Quick capture</h2><div class="rule"></div><span class="count">${captures.length}</span></div>`
+      + captures.map(c=>`<div class="cap-row"><span class="cap-text">${esc(c.text)}</span><button class="cap-tonote" data-tonote="${esc(c.id)}">→ Note</button><button class="x" data-capdel="${esc(c.id)}" aria-label="Delete">×</button></div>`).join("");
+  }
+
   let body;
   if(notes.length===0){
     body=`<div class="empty"><h3>No notes yet</h3><p>Jot study notes in markdown — a toolbar helps with the formatting. They're searchable and sync to Drive with everything else.</p><button class="btn" id="noteNewEmpty">New note</button></div>`;
   } else if(filtered.length===0){
     body=`<div class="empty"><h3>No matches</h3><p>No notes match that filter.</p></div>`;
   } else {
-    body=filtered.map(n=>{
+    body=`<div class="shead"><h2>Notes</h2><div class="rule"></div><span class="count">${filtered.length}</span></div>`
+      + filtered.map(n=>{
       const snip=mdStrip(n.body).slice(0,150);
       const tags=(n.tags||[]).map(t=>`<span class="ntag">#${esc(t)}</span>`).join("");
       return `<article class="note-card" data-noteopen="${esc(n.id)}">
@@ -1670,21 +1692,40 @@ async function renderNotes(el){
     }).join("");
   }
 
-  el.innerHTML=controls+body;
+  el.innerHTML=controls+captureSection+body;
 
   const s=el.querySelector("#noteSearch");
   if(s){ s.value=noteQuery; s.oninput=()=>{noteQuery=s.value;noteFocusSearch=true;renderNotes(el);}; }
   el.querySelectorAll("[data-notetrack]").forEach(b=>b.onclick=()=>{noteTrack=b.dataset.notetrack;renderNotes(el);});
   const nw=el.querySelector("#noteNew"), nwe=el.querySelector("#noteNewEmpty");
-  if(nw) nw.onclick=()=>{noteOpen="new";renderNotes(el);};
-  if(nwe) nwe.onclick=()=>{noteOpen="new";renderNotes(el);};
-  el.querySelectorAll("[data-noteopen]").forEach(c=>c.onclick=()=>{noteOpen=c.dataset.noteopen;renderNotes(el);});
+  if(nw) nw.onclick=()=>{noteOpen="new";notePrefill="";noteFromCapture=null;renderNotes(el);};
+  if(nwe) nwe.onclick=()=>{noteOpen="new";notePrefill="";noteFromCapture=null;renderNotes(el);};
+  el.querySelectorAll("[data-noteopen]").forEach(c=>c.onclick=()=>{noteOpen=c.dataset.noteopen;noteMode="view";renderNotes(el);});
+  el.querySelectorAll("[data-capdel]").forEach(b=>b.onclick=()=>dbDel("inbox",b.dataset.capdel).then(()=>renderNotes(el)));
+  el.querySelectorAll("[data-tonote]").forEach(b=>b.onclick=async()=>{
+    const c=await dbGet("inbox",b.dataset.tonote);
+    notePrefill=c?c.text:""; noteFromCapture=b.dataset.tonote; noteOpen="new"; renderNotes(el);
+  });
   if(noteFocusSearch){const s2=el.querySelector("#noteSearch");if(s2){s2.focus();s2.setSelectionRange(s2.value.length,s2.value.length);}noteFocusSearch=false;}
+}
+
+async function renderNoteView(el){
+  const n=await dbGet("notes",noteOpen);
+  if(!n){ noteOpen=null; return renderNotes(el); }
+  const tags=(n.tags||[]).map(t=>`<span class="ntag">#${esc(t)}</span>`).join("");
+  el.innerHTML=`
+    <div class="note-edit-top"><button class="back" id="noteBack">← Notes</button><button class="btn" id="noteEdit">Edit</button></div>
+    <h1 class="n-view-title">${esc(n.title||"Untitled")}</h1>
+    <div class="nc-meta" style="margin-bottom:16px"><span class="chip ${esc(n.track||"other")}">${esc(n.track||"other")}</span>${n.topic?`<span class="chip">${esc(n.topic)}</span>`:""}${tags}<span class="nc-date mono">${n.updatedAt?esc(shortDM(isoOf(new Date(n.updatedAt)))):""}</span></div>
+    <div class="md-preview note-read">${mdToHtml(n.body)||`<p class="hint">This note is empty.</p>`}</div>`;
+  el.querySelector("#noteBack").onclick=()=>{noteOpen=null;renderNotes(el);};
+  el.querySelector("#noteEdit").onclick=()=>{noteMode="edit";renderNotes(el);};
 }
 
 async function renderNoteEditor(el){
   const isNew=noteOpen==="new";
-  const n=isNew?{id:null,title:"",body:"",track:"frcophth",topic:"",tags:[],createdAt:null,updatedAt:null}
+  const prefill=notePrefill; notePrefill="";   // consume once
+  const n=isNew?{id:null,title:"",body:prefill,track:"frcophth",topic:"",tags:[],createdAt:null,updatedAt:null}
                :(await dbGet("notes",noteOpen))||{id:noteOpen,title:"",body:"",track:"frcophth",topic:"",tags:[]};
 
   const tools=[["B","bold","wrap","**","**","bold"],["I","italic","wrap","*","*","italic"],["H","heading","line","## "],
@@ -1722,10 +1763,10 @@ async function renderNoteEditor(el){
   el.querySelector("#noteBack").onclick=()=>{noteOpen=null;renderNotes(el);};
   const del=el.querySelector("#noteDel");
   if(del) del.onclick=async()=>{ if(confirm("Delete this note?")){await dbDel("notes",noteOpen);noteOpen=null;renderNotes(el);toast("Note deleted");} };
-  el.querySelector("#nSave").onclick=()=>saveNote(el,n);
+  el.querySelector("#nSave").onclick=()=>noteSave(el,n);
 }
 
-async function saveNote(el,n){
+async function noteSave(el,n){
   const title=el.querySelector("#nTitle").value.trim();
   const body=el.querySelector("#nBody").value;
   if(!title && !body.trim()){ toast("Add a title or some text first"); return; }
@@ -1741,7 +1782,8 @@ async function saveNote(el,n){
     updatedAt:now
   };
   await dbPut("notes",rec);
-  noteOpen=rec.id;          // keep editing the same record after first save
+  if(noteFromCapture){ await dbDel("inbox",noteFromCapture); noteFromCapture=null; }  // drain the converted capture
+  noteOpen=rec.id; noteMode="edit";   // stay editing the same record after first save
   renderNotes(el); toast("Saved");
 }
 
