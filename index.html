@@ -321,6 +321,41 @@ main{flex:1;padding:4px 18px 100px}
 .lib-src,.lib-opened{font-size:11px;color:var(--faint)}
 .lib-rate{flex:0 0 102px;min-height:0;cursor:pointer;align-items:center;justify-content:center;gap:4px;text-align:center}
 .lib-rate .ct-name{text-transform:uppercase;font-size:9px;letter-spacing:.05em;color:var(--faint)}
+
+/* ---------- Notes ---------- */
+.notes-top{display:flex;gap:8px}
+.notes-top .lib-search{flex:1}
+.notes-top .btn{white-space:nowrap;padding:12px 16px}
+.note-card{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:13px 14px;margin-bottom:9px;cursor:pointer}
+.note-card:hover{border-color:var(--accent-line)}
+.nc-head{display:flex;align-items:baseline;gap:10px}
+.nc-title{flex:1;font-size:15.5px;font-weight:600;line-height:1.3}
+.nc-date{font-size:11px;color:var(--faint);flex-shrink:0}
+.nc-snip{font-size:13px;color:var(--dim);line-height:1.45;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nc-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:9px}
+.ntag{font-size:11px;color:var(--dim);background:var(--bg-2);border:1px solid var(--line-soft);border-radius:99px;padding:2px 8px}
+.note-edit-top{display:flex;align-items:center;justify-content:space-between;margin:2px 0 12px}
+.note-edit-top .back{background:none;border:none;color:var(--dim);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+.note-edit-top .back:hover{color:var(--text)}
+.note-edit-top .removeitem{margin:0}
+.n-title{width:100%;background:none;border:none;border-bottom:1px solid var(--line);color:var(--text);font-size:20px;font-weight:600;padding:6px 2px;font-family:var(--sans);margin-bottom:14px}
+.n-title:focus{outline:none;border-bottom-color:var(--accent)}
+.n-fields{display:flex;gap:8px;margin-bottom:10px}
+.n-fields select,.n-fields input{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r-sm);padding:10px;font-size:14px;font-family:var(--sans)}
+.n-tags{width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r-sm);padding:10px 12px;font-size:14px;font-family:var(--sans);margin-bottom:12px}
+.md-toolbar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.md-btn{min-width:38px;height:36px;border:1px solid var(--line);background:var(--bg-2);color:var(--dim);border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--mono)}
+.md-btn:hover{color:var(--text);border-color:var(--accent-line)}
+.n-body{width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:var(--r-sm);padding:13px;font-size:15px;font-family:var(--mono);line-height:1.55;min-height:200px;resize:vertical}
+.md-preview{border:1px solid var(--line-soft);background:var(--bg-2);border-radius:var(--r);padding:4px 16px;font-size:15px;line-height:1.6}
+.md-preview h3,.md-preview h4,.md-preview h5{margin:14px 0 6px}
+.md-preview h3{font-size:18px} .md-preview h4{font-size:16px} .md-preview h5{font-size:14px}
+.md-preview p{margin:10px 0}
+.md-preview ul,.md-preview ol{margin:10px 0;padding-left:22px}
+.md-preview li{margin:3px 0}
+.md-preview blockquote{border-left:3px solid var(--line);margin:10px 0;padding:2px 0 2px 14px;color:var(--dim)}
+.md-preview code{font-family:var(--mono);font-size:13px;background:var(--surface);border:1px solid var(--line-soft);border-radius:5px;padding:1px 5px}
+.md-preview a{color:var(--accent)}
 .syncstat{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--text);margin:4px 0}
 .syncdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .syncdot.ok{background:var(--go)} .syncdot.warn{background:var(--ease)}
@@ -362,9 +397,9 @@ nav.tabs a:hover{color:var(--text)}
     <a href="#/today"    data-v="today"><span class="ic">◎</span>Today</a>
     <a href="#/plan"     data-v="plan"><span class="ic">▦</span>Plan</a>
     <a href="#/library"  data-v="library"><span class="ic">▤</span>Library</a>
+    <a href="#/notes"    data-v="notes"><span class="ic">≣</span>Notes</a>
     <a href="#/progress" data-v="progress"><span class="ic">▱</span>Progress</a>
     <a href="#/journal"  data-v="journal"><span class="ic">✎</span>Journal</a>
-    <a href="#/settings" data-v="settings"><span class="ic">⚙</span>Settings</a>
   </nav>
 
   <div class="main-col">
@@ -402,6 +437,7 @@ const STORES = {
   milestones: {keyPath:"id"},
   inbox:      {keyPath:"id"},      // quick capture
   library:    {keyPath:"id"},      // per-page confidence + last opened
+  notes:      {keyPath:"id"},      // markdown notes
   settings:   {keyPath:"key"},
   meta:       {keyPath:"key"}
 };
@@ -410,7 +446,7 @@ const STORES = {
 let _db=null;
 function openDB(){
   return new Promise((res,rej)=>{
-    const r=indexedDB.open("theatre",2);
+    const r=indexedDB.open("theatre",3);
     r.onupgradeneeded=e=>{
       const db=e.target.result;
       for(const [name,opt] of Object.entries(STORES))
@@ -459,7 +495,7 @@ function toast(msg){const el=document.getElementById("toast");el.textContent=msg
 /* =========================================================================
    Router
    ========================================================================= */
-const VIEWS={today:renderToday,plan:renderPlan,library:renderLibrary,progress:renderProgress,journal:renderJournal,settings:renderSettings};
+const VIEWS={today:renderToday,plan:renderPlan,library:renderLibrary,notes:renderNotes,progress:renderProgress,journal:renderJournal,settings:renderSettings};
 function currentView(){const h=location.hash.replace(/^#\/?/,"")||"today";return VIEWS[h]?h:"today";}
 async function route(){
   const v=currentView();
@@ -1537,6 +1573,176 @@ async function cycleLibConfidence(id,track,topic,el){
     if(r>cr) await dbPut("coverage",{key,track,topic,rating:r});
   }
   renderLibrary(el);
+}
+
+/* =========================================================================
+   NOTES  (markdown stored; toolbar inserts syntax; live preview; Drive-synced)
+   ========================================================================= */
+let noteOpen=null, noteQuery="", noteTrack="all", noteFocusSearch=false;
+const ALL_TOPICS=[...FRCOPHTH_TOPICS,...MSRA_TOPICS];
+
+/* ---- tiny self-contained markdown -> HTML (only what the toolbar offers) ---- */
+function mdInline(s){
+  s=s.replace(/`([^`]+)`/g,"<code>$1</code>");
+  s=s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g,(m,t,u)=>/^(https?:|mailto:|\/|#|\.)/i.test(u)?`<a href="${u}" target="_blank" rel="noopener">${t}</a>`:m);
+  s=s.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>");
+  s=s.replace(/\*([^*]+)\*/g,"<em>$1</em>");
+  return s;
+}
+function mdToHtml(md){
+  const lines=(md||"").replace(/\r\n/g,"\n").split("\n");
+  let out="", i=0;
+  while(i<lines.length){
+    const line=lines[i];
+    if(/^\s*$/.test(line)){ i++; continue; }
+    const h=line.match(/^(#{1,3})\s+(.*)$/);
+    if(h){ const lv=h[1].length+2; out+=`<h${lv}>${mdInline(esc(h[2]))}</h${lv}>`; i++; continue; }
+    if(/^>\s?/.test(line)){ const buf=[]; while(i<lines.length&&/^>\s?/.test(lines[i])){buf.push(esc(lines[i].replace(/^>\s?/,"")));i++;} out+=`<blockquote>${mdInline(buf.join("<br>"))}</blockquote>`; continue; }
+    if(/^\s*[-*]\s+/.test(line)){ const buf=[]; while(i<lines.length&&/^\s*[-*]\s+/.test(lines[i])){buf.push(`<li>${mdInline(esc(lines[i].replace(/^\s*[-*]\s+/,"")))}</li>`);i++;} out+=`<ul>${buf.join("")}</ul>`; continue; }
+    if(/^\s*\d+\.\s+/.test(line)){ const buf=[]; while(i<lines.length&&/^\s*\d+\.\s+/.test(lines[i])){buf.push(`<li>${mdInline(esc(lines[i].replace(/^\s*\d+\.\s+/,"")))}</li>`);i++;} out+=`<ol>${buf.join("")}</ol>`; continue; }
+    const buf=[];
+    while(i<lines.length&&!/^\s*$/.test(lines[i])&&!/^(#{1,3}\s|>\s?|\s*[-*]\s+|\s*\d+\.\s+)/.test(lines[i])){buf.push(esc(lines[i]));i++;}
+    out+=`<p>${mdInline(buf.join("<br>"))}</p>`;
+  }
+  return out;
+}
+function mdStrip(md){
+  return (md||"").replace(/\[([^\]]+)\]\([^)]*\)/g,"$1").replace(/[#>*`_]/g," ").replace(/^\s*[-\d.]+\s+/gm,"").replace(/\s+/g," ").trim();
+}
+
+/* ---- toolbar text helpers (operate on the textarea selection) ---- */
+function mdWrap(ta,before,after,ph){
+  const s=ta.selectionStart,e=ta.selectionEnd,sel=ta.value.slice(s,e)||ph;
+  ta.value=ta.value.slice(0,s)+before+sel+after+ta.value.slice(e);
+  const ns=s+before.length; ta.focus(); ta.setSelectionRange(ns,ns+sel.length);
+  ta.dispatchEvent(new Event("input"));
+}
+function mdLine(ta,prefix){
+  const s=ta.selectionStart,e=ta.selectionEnd;
+  const ls=ta.value.lastIndexOf("\n",s-1)+1;
+  const block=ta.value.slice(ls,e)||prefix.trim();
+  const pref=block.split("\n").map(l=>prefix+l).join("\n");
+  ta.value=ta.value.slice(0,ls)+pref+ta.value.slice(e);
+  ta.focus(); ta.setSelectionRange(ls,ls+pref.length);
+  ta.dispatchEvent(new Event("input"));
+}
+function mdLinkBtn(ta){
+  const s=ta.selectionStart,e=ta.selectionEnd,sel=ta.value.slice(s,e)||"text";
+  const ins="["+sel+"](url)";
+  ta.value=ta.value.slice(0,s)+ins+ta.value.slice(e);
+  const us=s+ins.length-4; ta.focus(); ta.setSelectionRange(us,us+3);
+  ta.dispatchEvent(new Event("input"));
+}
+
+async function renderNotes(el){
+  if(noteOpen!==null){ return renderNoteEditor(el); }
+
+  const notes=(await dbAll("notes")).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  const q=noteQuery.trim().toLowerCase();
+  const filtered=notes.filter(n=>{
+    if(noteTrack!=="all" && (n.track||"other")!==noteTrack) return false;
+    if(q){ const hay=((n.title||"")+" "+(n.body||"")+" "+(n.topic||"")+" "+((n.tags||[]).join(" "))).toLowerCase(); if(!hay.includes(q)) return false; }
+    return true;
+  });
+
+  const controls=`
+    <div class="lib-controls">
+      <div class="notes-top"><input id="noteSearch" class="lib-search" placeholder="Search notes…" autocomplete="off"><button class="btn" id="noteNew">New note</button></div>
+      <div class="lib-tracks">
+        ${[["all","All"],["frcophth","FRCOphth"],["msra","MSRA"],["other","Other"]].map(([v,l])=>`<button class="ltab ${noteTrack===v?"on":""}" data-notetrack="${v}">${l}</button>`).join("")}
+      </div>
+    </div>`;
+
+  let body;
+  if(notes.length===0){
+    body=`<div class="empty"><h3>No notes yet</h3><p>Jot study notes in markdown — a toolbar helps with the formatting. They're searchable and sync to Drive with everything else.</p><button class="btn" id="noteNewEmpty">New note</button></div>`;
+  } else if(filtered.length===0){
+    body=`<div class="empty"><h3>No matches</h3><p>No notes match that filter.</p></div>`;
+  } else {
+    body=filtered.map(n=>{
+      const snip=mdStrip(n.body).slice(0,150);
+      const tags=(n.tags||[]).map(t=>`<span class="ntag">#${esc(t)}</span>`).join("");
+      return `<article class="note-card" data-noteopen="${esc(n.id)}">
+        <div class="nc-head"><span class="nc-title">${esc(n.title||"Untitled")}</span><span class="nc-date mono">${n.updatedAt?esc(shortDM(isoOf(new Date(n.updatedAt)))):""}</span></div>
+        ${snip?`<div class="nc-snip">${esc(snip)}</div>`:""}
+        <div class="nc-meta"><span class="chip ${esc(n.track||"other")}">${esc(n.track||"other")}</span>${n.topic?`<span class="chip">${esc(n.topic)}</span>`:""}${tags}</div>
+      </article>`;
+    }).join("");
+  }
+
+  el.innerHTML=controls+body;
+
+  const s=el.querySelector("#noteSearch");
+  if(s){ s.value=noteQuery; s.oninput=()=>{noteQuery=s.value;noteFocusSearch=true;renderNotes(el);}; }
+  el.querySelectorAll("[data-notetrack]").forEach(b=>b.onclick=()=>{noteTrack=b.dataset.notetrack;renderNotes(el);});
+  const nw=el.querySelector("#noteNew"), nwe=el.querySelector("#noteNewEmpty");
+  if(nw) nw.onclick=()=>{noteOpen="new";renderNotes(el);};
+  if(nwe) nwe.onclick=()=>{noteOpen="new";renderNotes(el);};
+  el.querySelectorAll("[data-noteopen]").forEach(c=>c.onclick=()=>{noteOpen=c.dataset.noteopen;renderNotes(el);});
+  if(noteFocusSearch){const s2=el.querySelector("#noteSearch");if(s2){s2.focus();s2.setSelectionRange(s2.value.length,s2.value.length);}noteFocusSearch=false;}
+}
+
+async function renderNoteEditor(el){
+  const isNew=noteOpen==="new";
+  const n=isNew?{id:null,title:"",body:"",track:"frcophth",topic:"",tags:[],createdAt:null,updatedAt:null}
+               :(await dbGet("notes",noteOpen))||{id:noteOpen,title:"",body:"",track:"frcophth",topic:"",tags:[]};
+
+  const tools=[["B","bold","wrap","**","**","bold"],["I","italic","wrap","*","*","italic"],["H","heading","line","## "],
+    ["•","bulleted list","line","- "],["1.","numbered list","line","1. "],["❝","quote","line","> "],["</>","inline code","wrap","`","`","code"],["🔗","link","link"]];
+
+  el.innerHTML=`
+    <div class="note-edit-top"><button class="back" id="noteBack">← Notes</button>${isNew?"":`<button class="removeitem" id="noteDel">Delete note</button>`}</div>
+    <input id="nTitle" class="n-title" placeholder="Title" value="${esc(n.title||"")}" autocomplete="off">
+    <div class="n-fields">
+      <select id="nTrack">
+        ${[["frcophth","FRCOphth"],["msra","MSRA"],["other","Other"]].map(([v,l])=>`<option value="${v}" ${n.track===v?"selected":""}>${l}</option>`).join("")}
+      </select>
+      <input id="nTopic" list="topicList" placeholder="topic" value="${esc(n.topic||"")}" autocomplete="off">
+      <datalist id="topicList">${ALL_TOPICS.map(t=>`<option value="${esc(t)}">`).join("")}</datalist>
+    </div>
+    <input id="nTags" class="n-tags" placeholder="tags, comma separated" value="${esc((n.tags||[]).join(", "))}" autocomplete="off">
+    <div class="md-toolbar">
+      ${tools.map((t,i)=>`<button class="md-btn" data-tool="${i}" title="${esc(t[1])}">${esc(t[0])}</button>`).join("")}
+    </div>
+    <textarea id="nBody" class="n-body" placeholder="Write in markdown… the buttons above insert the formatting for you.">${esc(n.body||"")}</textarea>
+    <div class="shead"><h2>Preview</h2><div class="rule"></div></div>
+    <div class="md-preview" id="nPreview"></div>
+    <div class="btnrow" style="margin-top:14px"><button class="btn" id="nSave">Save</button></div>`;
+
+  const ta=el.querySelector("#nBody"), prev=el.querySelector("#nPreview");
+  const draw=()=>{prev.innerHTML=mdToHtml(ta.value)||`<p class="hint">Nothing to preview yet.</p>`;};
+  ta.addEventListener("input",draw); draw();
+
+  el.querySelectorAll(".md-btn").forEach(b=>b.onclick=()=>{
+    const t=tools[+b.dataset.tool];
+    if(t[2]==="wrap") mdWrap(ta,t[3],t[4],t[5]);
+    else if(t[2]==="line") mdLine(ta,t[3]);
+    else if(t[2]==="link") mdLinkBtn(ta);
+  });
+  el.querySelector("#noteBack").onclick=()=>{noteOpen=null;renderNotes(el);};
+  const del=el.querySelector("#noteDel");
+  if(del) del.onclick=async()=>{ if(confirm("Delete this note?")){await dbDel("notes",noteOpen);noteOpen=null;renderNotes(el);toast("Note deleted");} };
+  el.querySelector("#nSave").onclick=()=>saveNote(el,n);
+}
+
+async function saveNote(el,n){
+  const title=el.querySelector("#nTitle").value.trim();
+  const body=el.querySelector("#nBody").value;
+  if(!title && !body.trim()){ toast("Add a title or some text first"); return; }
+  const tags=el.querySelector("#nTags").value.split(",").map(t=>t.trim()).filter(Boolean);
+  const now=Date.now();
+  const rec={
+    id:n.id||("note-"+now.toString(36)+Math.random().toString(36).slice(2,5)),
+    title, body,
+    track:el.querySelector("#nTrack").value,
+    topic:el.querySelector("#nTopic").value.trim(),
+    tags,
+    createdAt:n.createdAt||now,
+    updatedAt:now
+  };
+  await dbPut("notes",rec);
+  noteOpen=rec.id;          // keep editing the same record after first save
+  renderNotes(el); toast("Saved");
 }
 
 /* =========================================================================
